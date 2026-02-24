@@ -77,8 +77,8 @@
             text-decoration: none;
             font-size: 0.9rem;
             transition: color 0.2s ease;
+            cursor: pointer;
         }
-
         .desktop-menu a:hover {
             color: #fab005;
         }
@@ -1067,6 +1067,11 @@
         .nav-center:hover {
             transform: scale(1.05);
         }
+
+        /* Hide elements based on page */
+        .home-only { display: block; }
+        .explore-only { display: none; }
+        .markets-only { display: none; }
     </style>
 </head>
 <body>
@@ -1090,9 +1095,9 @@
                 </div>
                 
                 <div class="desktop-menu">
-                    <a href="#" onclick="navigateTo('home')">Home</a>
-                    <a href="#" onclick="navigateTo('explore')">Explore</a>
-                    <a href="#" onclick="navigateTo('markets')">Markets</a>
+                    <a onclick="navigateTo('home')">Home</a>
+                    <a onclick="navigateTo('explore')">Explore</a>
+                    <a onclick="navigateTo('markets')">Markets</a>
                 </div>
 
                 <div class="header-right">
@@ -1101,14 +1106,16 @@
                 </div>
             </div>
 
-            <div class="search-container">
+            <!-- This search is only for home page -->
+            <div id="homeSearch" class="search-container">
                 <div class="search-wrapper">
                     <i class="ph ph-magnifying-glass search-icon"></i>
                     <input type="text" class="search-input" id="searchInput" placeholder="Search news, coins, topics...">
                 </div>
             </div>
 
-            <div class="trending-container" id="trendingTopics"></div>
+            <!-- Trending topics - only for home page -->
+            <div id="homeTrending" class="trending-container"></div>
         </div>
 
         <!-- Content -->
@@ -1413,12 +1420,14 @@
                 userLikes.clear();
             }
             
-            // Refresh current page
-            loadPage(currentPage);
+            // Refresh current page if needed
+            if (currentPage === 'home') {
+                await loadHomePage();
+            }
         });
 
         // ============================================
-        // NAVIGATION
+        // NAVIGATION - FIXED
         // ============================================
         window.navigateTo = function(page) {
             currentPage = page;
@@ -1432,51 +1441,35 @@
             // Reset states
             isSearching = false;
             searchTerm = '';
-            document.getElementById('searchInput').value = '';
-            document.getElementById('searchResultsHeader').style.display = 'none';
             
-            // Reset lazy loading states
-            displayedPosts = [];
-            currentDisplayCount = 0;
-            featuredPost = null;
+            // Show/hide home-specific elements
+            const homeSearch = document.getElementById('homeSearch');
+            const homeTrending = document.getElementById('homeTrending');
             
-            // Load page content
-            loadPage(page);
-        };
-
-        async function loadPage(page) {
-            const contentEl = document.getElementById('mainContent');
-            
-            switch(page) {
-                case 'home':
-                    contentEl.innerHTML = getHomePageHTML();
-                    await loadHomePage();
-                    break;
-                case 'explore':
-                    contentEl.innerHTML = getExplorePageHTML();
-                    setupExploreSearch();
-                    break;
-                case 'play':
-                    // Redirect to external URL
+            if (page === 'home') {
+                homeSearch.style.display = 'block';
+                homeTrending.style.display = 'flex';
+                loadHomePage();
+            } else {
+                homeSearch.style.display = 'none';
+                homeTrending.style.display = 'none';
+                
+                if (page === 'explore') {
+                    loadExplorePage();
+                } else if (page === 'markets') {
+                    loadMarketsPage();
+                } else if (page === 'play') {
                     window.open(PLAY_ICON_URL, '_blank');
-                    // Stay on current page or go home
                     navigateTo('home');
-                    break;
-                case 'markets':
-                    contentEl.innerHTML = getMarketsPageHTML();
-                    await loadMarketsPage();
-                    break;
-                case 'menu':
+                } else if (page === 'menu') {
                     showPopup('Menu', 'This feature is coming soon!');
                     navigateTo('home');
-                    break;
-                default:
-                    navigateTo('home');
+                }
             }
-        }
+        };
 
         // ============================================
-        // HOME PAGE WITH LAZY LOADING
+        // HOME PAGE
         // ============================================
         function getHomePageHTML() {
             return `
@@ -1496,6 +1489,9 @@
         }
 
         async function loadHomePage() {
+            const contentEl = document.getElementById('mainContent');
+            contentEl.innerHTML = getHomePageHTML();
+            
             try {
                 // Get all posts first
                 const allPostsQuery = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
@@ -1531,6 +1527,9 @@
                 
                 // Load first batch of posts
                 await loadMorePosts(true);
+                
+                // Setup search
+                setupSearch();
                 
             } catch (error) {
                 console.error('Error loading initial posts:', error);
@@ -1737,8 +1736,18 @@
         }
 
         // ============================================
-        // SEARCH FUNCTIONALITY - FIXED
+        // SEARCH FUNCTIONALITY
         // ============================================
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                performSearch(term);
+            });
+        }
+
         async function performSearch(term) {
             if (!term) {
                 // Clear search
@@ -1855,85 +1864,14 @@
         };
 
         // ============================================
-        // COMMENT LAZY LOADING FUNCTIONS
-        // ============================================
-        async function loadPostComments(postId, reset = false) {
-            try {
-                const postRef = doc(db, 'posts', postId);
-                const postDoc = await getDoc(postRef);
-                
-                if (!postDoc.exists()) return;
-                
-                const allComments = postDoc.data().comments || [];
-                
-                // Sort comments by timestamp (newest first)
-                const sortedComments = allComments.sort((a, b) => 
-                    new Date(b.timestamp) - new Date(a.timestamp)
-                );
-                
-                // Get or create comment state
-                let state = commentStates.get(postId);
-                if (!state) {
-                    state = {
-                        comments: sortedComments,
-                        displayedCount: 0,
-                        hasMore: sortedComments.length > COMMENTS_PER_BATCH
-                    };
-                    commentStates.set(postId, state);
-                } else {
-                    state.comments = sortedComments;
-                }
-                
-                // Determine how many to show
-                if (reset) {
-                    state.displayedCount = COMMENTS_PER_BATCH;
-                } else {
-                    state.displayedCount = Math.min(state.displayedCount + COMMENTS_PER_BATCH, state.comments.length);
-                }
-                
-                state.hasMore = state.displayedCount < state.comments.length;
-                
-                // Update UI
-                const commentsList = document.getElementById(`comments-list-${postId}`);
-                const loadMoreBtn = document.getElementById(`load-more-comments-${postId}`);
-                
-                if (!commentsList) return;
-                
-                if (state.displayedCount === 0) {
-                    commentsList.innerHTML = '<div style="color: #8a8d91; text-align: center; padding: 10px;">No comments yet</div>';
-                    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
-                    return;
-                }
-                
-                const commentsToShow = state.comments.slice(0, state.displayedCount);
-                
-                commentsList.innerHTML = commentsToShow.map(comment => `
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <span class="comment-author">${comment.author}</span>
-                            <span class="comment-time">${comment.time}</span>
-                        </div>
-                        <div class="comment-text">${comment.text}</div>
-                    </div>
-                `).join('');
-                
-                // Show/hide load more button
-                if (loadMoreBtn) {
-                    loadMoreBtn.style.display = state.hasMore ? 'block' : 'none';
-                }
-                
-            } catch (error) {
-                console.error('Error loading comments:', error);
-            }
-        }
-
-        window.loadMoreComments = async function(postId) {
-            await loadPostComments(postId);
-        };
-
-        // ============================================
         // EXPLORE PAGE
         // ============================================
+        function loadExplorePage() {
+            const contentEl = document.getElementById('mainContent');
+            contentEl.innerHTML = getExplorePageHTML();
+            setupExploreSearch();
+        }
+
         function getExplorePageHTML() {
             return `
                 <div class="page-indicator">
@@ -1989,6 +1927,12 @@
         // ============================================
         // MARKETS PAGE - COINGECKO API INTEGRATION
         // ============================================
+        function loadMarketsPage() {
+            const contentEl = document.getElementById('mainContent');
+            contentEl.innerHTML = getMarketsPageHTML();
+            fetchMarketData();
+        }
+
         function getMarketsPageHTML() {
             return `
                 <div class="page-indicator">
@@ -2006,7 +1950,7 @@
             `;
         }
 
-        async function loadMarketsPage() {
+        async function fetchMarketData() {
             try {
                 const marketsGrid = document.getElementById('marketsGrid');
                 if (!marketsGrid) return;
@@ -2035,7 +1979,7 @@
                 renderCoins(coins);
                 
                 // Set up auto-refresh every 15 minutes (900000 ms)
-                setTimeout(loadMarketsPage, 900000);
+                setTimeout(fetchMarketData, 900000);
                 
             } catch (error) {
                 console.error('Error fetching markets:', error);
@@ -2125,6 +2069,83 @@
                 }
             });
         }
+
+        // ============================================
+        // COMMENT LAZY LOADING FUNCTIONS
+        // ============================================
+        async function loadPostComments(postId, reset = false) {
+            try {
+                const postRef = doc(db, 'posts', postId);
+                const postDoc = await getDoc(postRef);
+                
+                if (!postDoc.exists()) return;
+                
+                const allComments = postDoc.data().comments || [];
+                
+                // Sort comments by timestamp (newest first)
+                const sortedComments = allComments.sort((a, b) => 
+                    new Date(b.timestamp) - new Date(a.timestamp)
+                );
+                
+                // Get or create comment state
+                let state = commentStates.get(postId);
+                if (!state) {
+                    state = {
+                        comments: sortedComments,
+                        displayedCount: 0,
+                        hasMore: sortedComments.length > COMMENTS_PER_BATCH
+                    };
+                    commentStates.set(postId, state);
+                } else {
+                    state.comments = sortedComments;
+                }
+                
+                // Determine how many to show
+                if (reset) {
+                    state.displayedCount = COMMENTS_PER_BATCH;
+                } else {
+                    state.displayedCount = Math.min(state.displayedCount + COMMENTS_PER_BATCH, state.comments.length);
+                }
+                
+                state.hasMore = state.displayedCount < state.comments.length;
+                
+                // Update UI
+                const commentsList = document.getElementById(`comments-list-${postId}`);
+                const loadMoreBtn = document.getElementById(`load-more-comments-${postId}`);
+                
+                if (!commentsList) return;
+                
+                if (state.displayedCount === 0) {
+                    commentsList.innerHTML = '<div style="color: #8a8d91; text-align: center; padding: 10px;">No comments yet</div>';
+                    if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+                    return;
+                }
+                
+                const commentsToShow = state.comments.slice(0, state.displayedCount);
+                
+                commentsList.innerHTML = commentsToShow.map(comment => `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.author}</span>
+                            <span class="comment-time">${comment.time}</span>
+                        </div>
+                        <div class="comment-text">${comment.text}</div>
+                    </div>
+                `).join('');
+                
+                // Show/hide load more button
+                if (loadMoreBtn) {
+                    loadMoreBtn.style.display = state.hasMore ? 'block' : 'none';
+                }
+                
+            } catch (error) {
+                console.error('Error loading comments:', error);
+            }
+        }
+
+        window.loadMoreComments = async function(postId) {
+            await loadPostComments(postId);
+        };
 
         // ============================================
         // NEWS FUNCTIONS
@@ -2457,7 +2478,7 @@
         };
 
         function renderTrending() {
-            const trendingEl = document.getElementById('trendingTopics');
+            const trendingEl = document.getElementById('homeTrending');
             if (!trendingEl) return;
             
             trendingEl.innerHTML = trendingTopics.map(item => `
@@ -2504,16 +2525,6 @@
                     document.getElementById('popup').classList.remove('show');
                 }
             });
-
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    if (currentPage === 'home') {
-                        const term = e.target.value.toLowerCase().trim();
-                        performSearch(term);
-                    }
-                });
-            }
         }
 
         // Initialize

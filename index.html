@@ -1541,18 +1541,26 @@
 
         // ============================================
         // RSS FEEDS - Organized by category
-        // Home page will ONLY show CoinTelegraph
+        // Home page will show CoinTelegraph AND Lyteit Blog
         // Explore page will show ALL feeds
         // ============================================
         const RSS_FEEDS = [
-            // Crypto News (Only this one shows on home page)
+            // Crypto News - These show on home page
             {
                 name: 'CoinTelegraph',
                 url: 'https://cointelegraph.com/rss',
                 category: 'news',
                 region: 'global',
                 icon: 'ph-lightning',
-                showOnHome: true  // Only CoinTelegraph has this true
+                showOnHome: true
+            },
+            {
+                name: 'Lyteit Blog',
+                url: 'https://lyteit.blogspot.com/feeds/posts/default?alt=rss',
+                category: 'news',
+                region: 'nigeria',
+                icon: 'ph-lightning',
+                showOnHome: true
             },
             // Stocks/Markets News (These only show in Explore)
             {
@@ -1848,7 +1856,7 @@
 
         // ============================================
         // GET ALL POSTS (Firebase + RSS)
-        // For home page: Only CoinTelegraph RSS
+        // For home page: Only CoinTelegraph and Lyteit Blog RSS
         // For explore: All RSS feeds
         // ============================================
         async function getAllPosts(forHomePage = true) {
@@ -2086,7 +2094,7 @@
         async function loadHomePage() {
             document.getElementById('mainContent').innerHTML = getHomePageHTML();
             try {
-                allPosts = await getAllPosts(true); // Pass true for home page (only CoinTelegraph)
+                allPosts = await getAllPosts(true); // Pass true for home page (only CoinTelegraph and Lyteit Blog)
                 
                 if (allPosts.length === 0) {
                     document.getElementById('featuredSection').innerHTML = '<div class="loading">No news yet</div>';

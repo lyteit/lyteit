@@ -1470,7 +1470,6 @@
             query,
             orderBy
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-        import Parser from 'https://esm.sh/rss-parser@3.13.0';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWsW8NaC-fs50D1hXganYW9gPCDUXRaMc",
@@ -1534,23 +1533,6 @@
         // ============================================
         const postCache = new Map();
         const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-        // ============================================
-        // RSS PARSER SETUP
-        // ============================================
-        const rssParser = new Parser({
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (compatible; lyteit-bot/1.0)'
-            },
-            timeout: 10000,
-            customFields: {
-                item: [
-                    ['media:content', 'mediaContent', { keepArray: true }],
-                    ['media:thumbnail', 'mediaThumbnail', { keepArray: true }],
-                    ['enclosure', 'enclosure', { keepArray: true }]
-                ]
-            }
-        });
 
         // ============================================
         // RSS FEEDS - Organized by category
@@ -1727,48 +1709,8 @@
             }
         }
 
-        // Extract image from RSS item
-        function extractImageFromFeedItem(item, feedName) {
-            // Try media:content first
-            if (item.mediaContent && item.mediaContent.length > 0) {
-                const media = item.mediaContent[0];
-                if (media.$ && media.$.url) return media.$.url;
-            }
-            
-            // Try media:thumbnail
-            if (item.mediaThumbnail && item.mediaThumbnail.length > 0) {
-                const thumb = item.mediaThumbnail[0];
-                if (thumb.$ && thumb.$.url) return thumb.$.url;
-            }
-            
-            // Try enclosure
-            if (item.enclosure && item.enclosure.length > 0) {
-                const enc = item.enclosure[0];
-                if (enc.$ && enc.$.url) return enc.$.url;
-            }
-            
-            // Extract from content
-            if (item.content) {
-                const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
-                if (imgMatch && imgMatch[1]) return imgMatch[1];
-            }
-            
-            // Default fallback images by source
-            const fallbacks = {
-                'CoinTelegraph': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0',
-                'MarketWatch': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3',
-                'Investing.com': 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f',
-                'CNBC': 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1',
-                'Entrepreneur Business Blog': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab',
-                'Nairametrics': 'https://images.unsplash.com/photo-1460472178825-e5240623afd5',
-                'Investing Nigeria': 'https://images.unsplash.com/photo-1523805009345-744884458755'
-            };
-            
-            return fallbacks[feedName] || 'https://images.unsplash.com/photo-1621761126064-fdd80772bc22';
-        }
-
         // ============================================
-        // FETCH RSS FEEDS
+        // FETCH RSS FEEDS (with rss2json.com - FREE, no API key needed)
         // ============================================
         async function fetchAllRssFeeds() {
             console.log('Fetching RSS feeds...');
@@ -1777,30 +1719,48 @@
             try {
                 const allArticles = [];
                 
+                // Use rss2json.com (completely free, no API key required)
+                const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json?rss_url=';
+                
                 // Fetch all feeds in parallel
                 const feedPromises = RSS_FEEDS.map(async (feed) => {
                     try {
-                        const result = await rssParser.parseURL(feed.url);
+                        const response = await fetch(RSS2JSON_API + encodeURIComponent(feed.url));
+                        const data = await response.json();
                         
-                        // Transform to match your existing post structure
-                        const articles = result.items.slice(0, 10).map(item => ({
-                            id: `rss-${feed.name}-${item.guid || item.link || Date.now()}`,
-                            title: item.title || 'No title',
-                            content: item.contentSnippet || item.summary || item.content || '',
-                            image: extractImageFromFeedItem(item, feed.name),
-                            source: feed.name,
-                            sourceUrl: item.link,
-                            category: 'news',
-                            region: feed.region,
-                            type: 'article',
-                            createdAt: item.isoDate ? new Date(item.isoDate) : new Date(),
-                            likes: 0,
-                            comments: [],
-                            featured: false,
-                            rss: true
-                        }));
-                        
-                        return articles;
+                        if (data.status === 'ok' && data.items) {
+                            const articles = data.items.slice(0, 10).map(item => {
+                                // Extract image from thumbnail or content
+                                let image = item.thumbnail || '';
+                                if (!image && item.description) {
+                                    const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
+                                    if (imgMatch) image = imgMatch[1];
+                                }
+                                
+                                // Clean description (remove HTML)
+                                const content = item.description ? item.description.replace(/<[^>]*>/g, '') : '';
+                                
+                                return {
+                                    id: `rss-${feed.name}-${item.guid || item.link || Date.now()}`,
+                                    title: item.title || 'No title',
+                                    content: content.substring(0, 300),
+                                    image: image || `https://images.unsplash.com/photo-1621761126064-fdd80772bc22`,
+                                    source: feed.name,
+                                    sourceUrl: item.link,
+                                    category: 'news',
+                                    region: feed.region,
+                                    type: 'article',
+                                    createdAt: item.pubDate ? new Date(item.pubDate) : new Date(),
+                                    likes: 0,
+                                    comments: [],
+                                    featured: false,
+                                    rss: true
+                                };
+                            });
+                            
+                            return articles;
+                        }
+                        return [];
                     } catch (error) {
                         console.error(`Error fetching ${feed.name}:`, error);
                         return [];
@@ -2086,7 +2046,7 @@
             btn.disabled = true;
             
             // Clear RSS cache
-            postCache.delete('rss-posts');
+            postCache.delete('firebase-posts');
             await loadHomePage();
             
             btn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Refresh News';
@@ -2173,7 +2133,7 @@
             const comments = post.comments || [];
             
             return `
-                <div class="news-item" id="post-${post.id}">
+                <div class="news-item" id="post-${post.id}" onclick="window.open('${post.sourceUrl || '#'}','_blank')">
                     <img src="${post.image}" class="news-item-img" onerror="this.src='https://images.unsplash.com/photo-1621761126064-fdd80772bc22'">
                     <div class="news-item-content">
                         <div class="news-item-title">${post.title}</div>
@@ -2187,9 +2147,9 @@
                             ${expanded ? formatContent(post.content) : truncateForPreview(post.content, 100)}
                         </div>
                         ${(post.content || '').length > 100 ? `
-                            <button class="read-more-btn" style="font-size:0.7rem;" onclick="toggleReadMore('${post.id}', false, event)">${expanded ? 'less' : 'more'}</button>
+                            <button class="read-more-btn" style="font-size:0.7rem;" onclick="event.stopPropagation(); toggleReadMore('${post.id}', false, event)">${expanded ? 'less' : 'more'}</button>
                         ` : ''}
-                        <div class="interaction-bar">
+                        <div class="interaction-bar" onclick="event.stopPropagation()">
                             <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}', event)">
                                 <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                 <span class="like-count">${post.likes || 0}</span>
@@ -2201,7 +2161,7 @@
                         </div>
                         
                         <!-- Comments Section -->
-                        <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                        <div class="comments-section" id="comments-${post.id}" style="display: none;" onclick="event.stopPropagation()">
                             <div class="comment-input-area">
                                 <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${post.id}')">
                                 <span class="comment-char-count">150/150</span>
@@ -2352,7 +2312,7 @@
             } else {
                 const expanded = expandedPosts.get(featured.id) || false;
                 el.innerHTML = `
-                    <div class="featured-card" id="post-${featured.id}">
+                    <div class="featured-card" id="post-${featured.id}" onclick="window.open('${featured.sourceUrl || '#'}','_blank')">
                         <img src="${featured.image}" class="featured-img" onerror="this.src='https://images.unsplash.com/photo-1639762681485-074b7f938ba0'">
                         <h1 class="featured-title">${featured.title}</h1>
                         ${featured.source ? `
@@ -2361,7 +2321,7 @@
                             </div>
                         ` : ''}
                         <div class="meta-info"><span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span></div>
-                        <div class="featured-content">
+                        <div class="featured-content" onclick="event.stopPropagation()">
                             <div class="post-content-container" data-full-content="${(featured.content || '').replace(/"/g, '&quot;')}">
                                 ${expanded ? formatContent(featured.content) : truncateForPreview(featured.content, 150)}
                             </div>
@@ -2371,7 +2331,7 @@
                                 </button>
                             ` : ''}
                         </div>
-                        <div class="interaction-bar">
+                        <div class="interaction-bar" onclick="event.stopPropagation()">
                             <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${featured.id}', event)">
                                 <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                 <span class="like-count">${featured.likes || 0}</span>
@@ -2383,7 +2343,7 @@
                         </div>
                         
                         <!-- Comments Section -->
-                        <div class="comments-section" id="comments-${featured.id}" style="display: none;">
+                        <div class="comments-section" id="comments-${featured.id}" style="display: none;" onclick="event.stopPropagation()">
                             <div class="comment-input-area">
                                 <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${featured.id}')">
                                 <span class="comment-char-count">150/150</span>
@@ -2760,7 +2720,7 @@
                                     <div class="explore-icon"><i class="ph ph-newspaper"></i></div>
                                     <div class="explore-name">${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}</div>
                                 </div>
-                                <span class="explore-category">📰 News • ${item.source}</span>
+                                <span class="explore-category">📰 News • ${item.source} ${item.region === 'nigeria' ? '🇳🇬' : ''}</span>
                                 <div class="explore-description">${item.content.substring(0, 100)}${item.content.length > 100 ? '...' : ''}</div>
                                 <div class="explore-url">
                                     <i class="ph ph-link"></i>

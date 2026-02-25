@@ -589,7 +589,7 @@
             background: #1e2128;
         }
 
-        /* Interaction Bar - Updated for view count */
+        /* Interaction Bar */
         .interaction-bar {
             display: flex;
             align-items: center;
@@ -1422,7 +1422,7 @@
 
     <script type="module">
         // ============================================
-        // API CONFIGURATION
+        // API CONFIGURATION - FIXED
         // ============================================
         const API_BASE = 'https://lyteit-backend.vercel.app/api';
 
@@ -1477,13 +1477,15 @@
         });
 
         // ============================================
-        // VIEW TRACKING FUNCTION (FIXED)
+        // VIEW TRACKING FUNCTION - FIXED
         // ============================================
         async function trackPostView(postId) {
             if (!postId) return;
             
             try {
                 console.log('📊 Tracking view for post:', postId);
+                console.log('Calling:', `${API_BASE}/track-view`);
+                
                 const response = await fetch(`${API_BASE}/track-view`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1491,13 +1493,15 @@
                 });
                 
                 if (!response.ok) {
-                    console.log('View tracking response not OK:', response.status);
+                    console.log('❌ View tracking failed with status:', response.status);
+                    const text = await response.text();
+                    console.log('Response:', text);
                 } else {
                     const data = await response.json();
                     console.log('✅ View tracked:', data);
                 }
             } catch (error) {
-                console.log('Track view error (non-critical):', error);
+                console.log('❌ Track view error:', error);
             }
         }
 
@@ -1961,7 +1965,7 @@
         // RENDER FUNCTIONS WITH VIEW TRACKING
         // ============================================
         function renderArticlePost(post) {
-            // 🔥 FIXED: Track view when post is rendered
+            // Track view when post is rendered
             setTimeout(() => trackPostView(post.id), 100);
             
             const expanded = expandedPosts.get(post.id) || false;
@@ -2022,7 +2026,7 @@
         }
 
         function renderVideoPost(post) {
-            // 🔥 FIXED: Track view when post is rendered
+            // Track view when post is rendered
             setTimeout(() => trackPostView(post.id), 100);
             
             const videoId = getYouTubeVideoId(post.youtubeUrl) || 'dQw4w9WgXcQ';
@@ -2094,7 +2098,7 @@
         }
 
         async function renderFeaturedPost(featured) {
-            // 🔥 FIXED: Track view when post is rendered
+            // Track view when post is rendered
             setTimeout(() => trackPostView(featured.id), 100);
             
             const el = document.getElementById('featuredSection');

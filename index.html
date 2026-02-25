@@ -297,10 +297,6 @@
         .trending-item i {
             color: #fab005;
         }
-        .trending-count {
-            color: #8a8d91;
-            font-size: 0.7rem;
-        }
 
         /* Scrollable Content */
         .scrollable-content {
@@ -1544,15 +1540,15 @@
         const categories = ['All', 'News', 'Data', 'Education', 'Video'];
 
         // ============================================
-        // TRENDING TOPICS
+        // TRENDING TOPICS - Updated with new names and NO counts
         // ============================================
         const trendingTopics = [
-            { topic: "#BitcoinHalving", posts: "2.3K", icon: "ph-lightning" },
-            { topic: "SEC vs Ripple", posts: "1.8K", icon: "ph-scales" },
-            { topic: "Ethereum Upgrade", posts: "1.2K", icon: "ph-code" },
-            { topic: "Nigeria Economy", posts: "4.1K", icon: "ph-flag" },
-            { topic: "Fed Decision", posts: "892", icon: "ph-chart-line-up" },
-            { topic: "NGX All Share", posts: "3.2K", icon: "ph-trend-up" }
+            { topic: "Bitcoin", icon: "ph-lightning" },
+            { topic: "Ethereum", icon: "ph-code" },
+            { topic: "Ripple XRP", icon: "ph-currency-circle-dollar" },
+            { topic: "Nigeria Economy", icon: "ph-flag" },
+            { topic: "Fed Decision", icon: "ph-bank" },
+            { topic: "NGX All Share", icon: "ph-trend-up" }
         ];
 
         // ============================================
@@ -2181,7 +2177,7 @@
         };
 
         // ============================================
-        // SEARCH FUNCTIONS
+        // SEARCH FUNCTIONS - Updated to handle trending clicks
         // ============================================
         function setupSearch() {
             document.getElementById('searchInput')?.addEventListener('input', (e) => {
@@ -2189,6 +2185,15 @@
                 performSearch(term);
             });
         }
+
+        // New function to handle trending topic clicks
+        window.searchTrendingTopic = function(topic) {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = topic;
+                performSearch(topic);
+            }
+        };
 
         async function performSearch(term) {
             if (!term) {
@@ -2226,6 +2231,20 @@
             document.getElementById('searchInput').value = '';
             performSearch('');
         };
+
+        // ============================================
+        // RENDER TRENDING - Updated with new click handler
+        // ============================================
+        function renderTrending() {
+            const el = document.getElementById('homeTrending');
+            if (el) {
+                el.innerHTML = trendingTopics.map(t => `
+                    <div class="trending-item" onclick="searchTrendingTopic('${t.topic}')">
+                        <i class="ph ${t.icon}"></i><span>${t.topic}</span>
+                    </div>
+                `).join('');
+            }
+        }
 
         // ============================================
         // EXPLORE PAGE
@@ -2457,15 +2476,6 @@
             document.getElementById('popupTitle').textContent = title;
             document.getElementById('popupMessage').textContent = message;
             document.getElementById('popup').classList.add('show');
-        }
-
-        function renderTrending() {
-            const el = document.getElementById('homeTrending');
-            if (el) el.innerHTML = trendingTopics.map(t => `
-                <div class="trending-item" onclick="document.getElementById('searchInput').value='${t.topic}'; performSearch('${t.topic}')">
-                    <i class="ph ${t.icon}"></i><span>${t.topic}</span><span class="trending-count">• ${t.posts}</span>
-                </div>
-            `).join('');
         }
 
         function setupEventListeners() {

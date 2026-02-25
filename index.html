@@ -1959,10 +1959,12 @@
                             <button class="read-more-btn" style="font-size:0.7rem;" onclick="event.stopPropagation(); toggleReadMore('${post.id}', false, event)">${expanded ? 'less' : 'more'}</button>
                         ` : ''}
                         
-                        <div class="meta-info">
-                            <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
-                            ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
-                        </div>
+                        ${!isRSS ? `
+                            <div class="meta-info">
+                                <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
+                                ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -1972,6 +1974,7 @@
             const videoId = getYouTubeVideoId(post.youtubeUrl) || 'dQw4w9WgXcQ';
             const expanded = expandedPosts.get(post.id) || false;
             const played = videoPlayed.get(post.id) || false;
+            const isRSS = post.rss === true;
             
             return `
                 <div class="video-card" id="post-${post.id}">
@@ -1993,10 +1996,12 @@
                         </div>
                     ` : ''}
                     <div style="padding:15px;">
-                        <div class="meta-info">
-                            <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
-                            ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
-                        </div>
+                        ${!isRSS ? `
+                            <div class="meta-info">
+                                <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
+                                ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -2032,9 +2037,11 @@
                             </div>
                         ` : ''}
                         <div style="padding:15px;">
-                            <div class="meta-info">
-                                <span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span>
-                            </div>
+                            ${!isRSS ? `
+                                <div class="meta-info">
+                                    <span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -2059,9 +2066,11 @@
                                 </button>
                             ` : ''}
                         </div>
-                        <div class="meta-info" style="margin-top:10px;">
-                            <span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span>
-                        </div>
+                        ${!isRSS ? `
+                            <div class="meta-info" style="margin-top:10px;">
+                                <span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span>
+                            </div>
+                        ` : ''}
                         ${featured.featured ? '<div style="margin-top:10px;"><span class="article-featured">⭐ Featured</span></div>' : ''}
                     </div>
                 `;

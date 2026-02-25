@@ -1150,6 +1150,15 @@
         .nav-center:hover {
             transform: scale(1.05);
         }
+
+        .article-featured {
+            background: #fab00520;
+            color: #fab005;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -1314,7 +1323,7 @@
         // ============================================
         let currentUser = null;
         let pendingAction = null;
-        let userLikes = new Map();
+        let userLikes = new Map(); // Stores which posts the current user has liked
         let currentPage = 'home';
         let allPosts = [];
         let searchTerm = '';
@@ -1326,7 +1335,7 @@
         let featuredPost = null;
 
         // Comment states
-        const commentStates = new Map();
+        const commentStates = new Map(); // Stores pagination state for each post's comments
         const COMMENTS_PER_BATCH = 5;
         let isSearching = false;
         const videoPlayed = new Map();
@@ -1480,11 +1489,15 @@
             currentUser = user;
             updateUserProfile();
             if (pendingAction && user) {
-                const { type, postId, text } = pendingAction;
+                const { type, postId } = pendingAction;
                 if (type === 'like') handleLike(postId);
                 else if (type === 'comment') {
-                    const input = document.querySelector(`#comments-${postId} .comment-input`);
-                    if (input) input.focus();
+                    const section = document.getElementById(`comments-${postId}`);
+                    if (section) {
+                        section.style.display = 'block';
+                        const input = section.querySelector('.comment-input');
+                        if (input) input.focus();
+                    }
                 }
                 pendingAction = null;
             }
@@ -1523,11 +1536,32 @@
         window.handleSignOut = async () => {
             try {
                 await signOut(auth);
+                userLikes.clear(); // Clear likes on sign out
                 showPopup('Signed Out', 'See you next time!');
             } catch (error) {
                 showPopup('Error', 'Failed to sign out');
             }
         };
+
+        // ============================================
+        // LOAD USER LIKES (NEW FUNCTION)
+        // ============================================
+        async function loadUserLikes() {
+            if (!currentUser || !allPosts.length) return;
+            
+            // Since we don't have a dedicated endpoint to get user likes,
+            // we check each post's likedBy array
+            for (const post of allPosts) {
+                if (post.likedBy && Array.isArray(post.likedBy) && post.likedBy.includes(currentUser.uid)) {
+                    userLikes.set(post.id, true);
+                }
+            }
+            
+            // Re-render current view to show liked state
+            if (currentPage === 'home') {
+                await loadHomePage();
+            }
+        }
 
         // ============================================
         // NAVIGATION
@@ -1573,6 +1607,12 @@
             document.getElementById('mainContent').innerHTML = getHomePageHTML();
             try {
                 allPosts = await fetchPosts();
+                
+                // After loading posts, load user likes if signed in
+                if (currentUser) {
+                    await loadUserLikes();
+                }
+                
                 if (allPosts.length === 0) {
                     document.getElementById('featuredSection').innerHTML = '<div class="loading">No news yet</div>';
                     document.getElementById('loadMoreContainer').style.display = 'none';
@@ -1600,11 +1640,25 @@
                 const start = reset ? 0 : currentDisplayCount;
                 const end = start + POSTS_PER_BATCH;
                 const posts = displayedPosts.slice(start, end);
-                if (posts.length === 0) { document.getElementById('loadMoreContainer').style.display = 'none'; return; }
+                if (posts.length === 0) { 
+                    if (reset && list.innerHTML === '') {
+                        list.innerHTML = '<div class="loading">No more posts</div>';
+                    }
+                    document.getElementById('loadMoreContainer').style.display = 'none'; 
+                    return; 
+                }
                 currentDisplayCount = end;
                 let html = reset ? '' : list.innerHTML;
-                for (const p of posts) html += p.type === 'video' ? renderVideoPost(p) : renderArticlePost(p);
+                for (const p of posts) {
+                    html += p.type === 'video' ? renderVideoPost(p) : renderArticlePost(p);
+                }
                 list.innerHTML = html;
+                
+                // Load comments for each post
+                for (const p of posts) {
+                    await loadComments(p.id, 1, true); // silent load (don't show loading)
+                }
+                
                 if (btn) {
                     if (currentDisplayCount >= displayedPosts.length) {
                         btn.innerHTML = '<i class="ph ph-check-circle"></i> All Posts Loaded';
@@ -1622,6 +1676,8 @@
         function renderArticlePost(post) {
             const expanded = expandedPosts.get(post.id) || false;
             const liked = userLikes.get(post.id) || false;
+            const comments = post.comments || [];
+            
             return `
                 <div class="news-item" id="post-${post.id}">
                     <img src="${post.image}" class="news-item-img" onerror="this.src='https://images.unsplash.com/photo-1621761126064-fdd80772bc22'">
@@ -1640,9 +1696,25 @@
                             </div>
                             <div class="interaction-item" onclick="toggleComments('${post.id}', event)">
                                 <i class="ph ph-chat-circle"></i>
-                                <span id="comment-count-${post.id}">${post.comments?.length || 0}</span>
+                                <span id="comment-count-${post.id}">${comments.length}</span>
                             </div>
                         </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                            <div class="comment-input-area">
+                                <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${post.id}')">
+                                <span class="comment-char-count">150/150</span>
+                                <button class="comment-submit" onclick="addComment('${post.id}', event)" disabled>Post</button>
+                            </div>
+                            <div class="comments-list" id="comments-list-${post.id}">
+                                <div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>
+                            </div>
+                            <div class="load-more-comments" id="load-more-comments-${post.id}" style="display: none;" onclick="loadMoreComments('${post.id}')">
+                                <i class="ph ph-arrow-down"></i> Load more comments
+                            </div>
+                        </div>
+                        
                         <div class="meta-info">
                             <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
                             ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
@@ -1657,6 +1729,8 @@
             const expanded = expandedPosts.get(post.id) || false;
             const liked = userLikes.get(post.id) || false;
             const played = videoPlayed.get(post.id) || false;
+            const comments = post.comments || [];
+            
             return `
                 <div class="video-card" id="post-${post.id}">
                     <div class="video-header"><i class="ph-fill ph-youtube-logo"></i><div class="video-title">${post.title}</div></div>
@@ -1684,9 +1758,25 @@
                             </div>
                             <div class="interaction-item" onclick="toggleComments('${post.id}', event)">
                                 <i class="ph ph-chat-circle"></i>
-                                <span id="comment-count-${post.id}">${post.comments?.length || 0}</span>
+                                <span id="comment-count-${post.id}">${comments.length}</span>
                             </div>
                         </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section" id="comments-${post.id}" style="display: none;">
+                            <div class="comment-input-area">
+                                <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${post.id}')">
+                                <span class="comment-char-count">150/150</span>
+                                <button class="comment-submit" onclick="addComment('${post.id}', event)" disabled>Post</button>
+                            </div>
+                            <div class="comments-list" id="comments-list-${post.id}">
+                                <div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>
+                            </div>
+                            <div class="load-more-comments" id="load-more-comments-${post.id}" style="display: none;" onclick="loadMoreComments('${post.id}')">
+                                <i class="ph ph-arrow-down"></i> Load more comments
+                            </div>
+                        </div>
+                        
                         <div class="meta-info" style="margin-top:10px;">
                             <span><i class="ph ph-clock"></i> ${getRelativeTime(post.createdAt || post.timestamp)}</span>
                             ${post.featured ? '<span class="article-featured">⭐ Featured</span>' : ''}
@@ -1699,10 +1789,13 @@
         async function renderFeaturedPost(featured) {
             const el = document.getElementById('featuredSection');
             if (!el) return;
+            
+            const liked = userLikes.get(featured.id) || false;
+            const comments = featured.comments || [];
+            
             if (featured.type === 'video') {
                 const videoId = getYouTubeVideoId(featured.youtubeUrl) || 'dQw4w9WgXcQ';
                 const expanded = expandedPosts.get(featured.id) || false;
-                const liked = userLikes.get(featured.id) || false;
                 const played = videoPlayed.get(featured.id) || false;
                 el.innerHTML = `
                     <div class="video-card" id="post-${featured.id}">
@@ -1731,9 +1824,25 @@
                                 </div>
                                 <div class="interaction-item" onclick="toggleComments('${featured.id}', event)">
                                     <i class="ph ph-chat-circle"></i>
-                                    <span id="comment-count-${featured.id}">${featured.comments?.length || 0}</span>
+                                    <span id="comment-count-${featured.id}">${comments.length}</span>
                                 </div>
                             </div>
+                            
+                            <!-- Comments Section -->
+                            <div class="comments-section" id="comments-${featured.id}" style="display: none;">
+                                <div class="comment-input-area">
+                                    <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${featured.id}')">
+                                    <span class="comment-char-count">150/150</span>
+                                    <button class="comment-submit" onclick="addComment('${featured.id}', event)" disabled>Post</button>
+                                </div>
+                                <div class="comments-list" id="comments-list-${featured.id}">
+                                    <div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>
+                                </div>
+                                <div class="load-more-comments" id="load-more-comments-${featured.id}" style="display: none;" onclick="loadMoreComments('${featured.id}')">
+                                    <i class="ph ph-arrow-down"></i> Load more comments
+                                </div>
+                            </div>
+                            
                             <div class="meta-info" style="margin-top:10px;">
                                 <span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span>
                             </div>
@@ -1742,7 +1851,6 @@
                 `;
             } else {
                 const expanded = expandedPosts.get(featured.id) || false;
-                const liked = userLikes.get(featured.id) || false;
                 el.innerHTML = `
                     <div class="featured-card" id="post-${featured.id}">
                         <img src="${featured.image}" class="featured-img" onerror="this.src='https://images.unsplash.com/photo-1639762681485-074b7f938ba0'">
@@ -1765,13 +1873,32 @@
                             </div>
                             <div class="interaction-item" onclick="toggleComments('${featured.id}', event)">
                                 <i class="ph ph-chat-circle"></i>
-                                <span id="comment-count-${featured.id}">${featured.comments?.length || 0}</span>
+                                <span id="comment-count-${featured.id}">${comments.length}</span>
                             </div>
                         </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section" id="comments-${featured.id}" style="display: none;">
+                            <div class="comment-input-area">
+                                <input type="text" class="comment-input" placeholder="Add a comment... (max 150 chars)" maxlength="150" oninput="updateCharCount('${featured.id}')">
+                                <span class="comment-char-count">150/150</span>
+                                <button class="comment-submit" onclick="addComment('${featured.id}', event)" disabled>Post</button>
+                            </div>
+                            <div class="comments-list" id="comments-list-${featured.id}">
+                                <div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>
+                            </div>
+                            <div class="load-more-comments" id="load-more-comments-${featured.id}" style="display: none;" onclick="loadMoreComments('${featured.id}')">
+                                <i class="ph ph-arrow-down"></i> Load more comments
+                            </div>
+                        </div>
+                        
                         ${featured.featured ? '<div style="margin-top:10px;"><span class="article-featured">⭐ Featured</span></div>' : ''}
                     </div>
                 `;
             }
+            
+            // Load comments for featured post
+            await loadComments(featured.id, 1, true);
         }
 
         // ============================================
@@ -1786,25 +1913,30 @@
             }
             const section = document.getElementById(`comments-${postId}`);
             if (section) {
-                const isHidden = section.style.display === 'none';
+                const isHidden = section.style.display === 'none' || !section.style.display;
                 section.style.display = isHidden ? 'block' : 'none';
                 if (isHidden) loadComments(postId, 1);
             }
         };
 
-        async function loadComments(postId, page = 1) {
+        async function loadComments(postId, page = 1, silent = false) {
             try {
-                const data = await fetchComments(postId, page);
                 const list = document.getElementById(`comments-list-${postId}`);
                 const btn = document.getElementById(`load-more-comments-${postId}`);
                 if (!list) return;
                 
-                let state = commentStates.get(postId) || { page: 1, hasMore: false };
+                if (!silent) {
+                    list.innerHTML = '<div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>';
+                }
+                
+                const data = await fetchComments(postId, page);
+                
+                let state = commentStates.get(postId) || { page: 1, hasMore: false, comments: [] };
                 state.page = page;
                 state.hasMore = data.hasMore;
-                commentStates.set(postId, state);
                 
                 if (page === 1) {
+                    state.comments = data.comments;
                     list.innerHTML = data.comments.length ? data.comments.map(c => `
                         <div class="comment-item">
                             <div class="comment-header"><span class="comment-author">${c.author}</span><span class="comment-time">${c.time}</span></div>
@@ -1812,6 +1944,7 @@
                         </div>
                     `).join('') : '<div style="color:#8a8d91; text-align:center; padding:10px;">No comments yet</div>';
                 } else {
+                    state.comments = [...(state.comments || []), ...data.comments];
                     list.innerHTML += data.comments.map(c => `
                         <div class="comment-item">
                             <div class="comment-header"><span class="comment-author">${c.author}</span><span class="comment-time">${c.time}</span></div>
@@ -1820,15 +1953,21 @@
                     `).join('');
                 }
                 
+                commentStates.set(postId, state);
+                
                 if (btn) btn.style.display = data.hasMore ? 'block' : 'none';
             } catch (error) {
                 console.error('Error loading comments:', error);
+                const list = document.getElementById(`comments-list-${postId}`);
+                if (list && !silent) {
+                    list.innerHTML = '<div style="color: #ff5252; text-align: center; padding: 10px;">Error loading comments</div>';
+                }
             }
         }
 
         window.loadMoreComments = async function(postId) {
             const state = commentStates.get(postId) || { page: 1 };
-            await loadComments(postId, state.page + 1);
+            await loadComments(postId, (state.page || 1) + 1);
         };
 
         window.addComment = async function(postId, event) {
@@ -1847,8 +1986,20 @@
                 input.value = '';
                 updateCharCount(postId);
                 await loadComments(postId, 1);
+                
+                // Update comment count
                 const countSpan = document.getElementById(`comment-count-${postId}`);
-                if (countSpan) countSpan.textContent = parseInt(countSpan.textContent || '0') + 1;
+                if (countSpan) {
+                    const current = parseInt(countSpan.textContent || '0');
+                    countSpan.textContent = current + 1;
+                }
+                
+                // Also update the post object
+                const post = allPosts.find(p => p.id === postId);
+                if (post) {
+                    post.comments = post.comments || [];
+                    post.comments.push({ text, author: currentUser.displayName || 'Anonymous', time: new Date().toLocaleString() });
+                }
             } catch (error) {
                 showPopup('Error', 'Failed to add comment');
             }
@@ -1890,6 +2041,18 @@
                         userLikes.set(postId, !liked);
                         btn.classList.toggle('liked', !liked);
                         count.textContent = result.likes;
+                    }
+                    
+                    // Also update the post object
+                    const postObj = allPosts.find(p => p.id === postId);
+                    if (postObj) {
+                        postObj.likes = result.likes;
+                        if (!liked) {
+                            postObj.likedBy = postObj.likedBy || [];
+                            postObj.likedBy.push(currentUser.uid);
+                        } else {
+                            postObj.likedBy = (postObj.likedBy || []).filter(id => id !== currentUser.uid);
+                        }
                     }
                 }
             } catch (error) {
@@ -1967,6 +2130,11 @@
                 return;
             }
             list.innerHTML = filtered.map(p => p.type === 'video' ? renderVideoPost(p) : renderArticlePost(p)).join('');
+            
+            // Load comments for search results
+            for (const p of filtered) {
+                await loadComments(p.id, 1, true);
+            }
         }
 
         window.clearSearch = function() {

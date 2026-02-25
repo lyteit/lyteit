@@ -10,6 +10,7 @@
     <!-- Chart.js for simple charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
+        /* ALL YOUR EXISTING STYLES - KEEP THEM EXACTLY THE SAME */
         * {
             margin: 0;
             padding: 0;
@@ -1271,7 +1272,7 @@
             display: inline-block;
         }
 
-        /* Cache indicator */
+        /* Cache indicator (for debugging - optional) */
         .cache-indicator {
             position: fixed;
             bottom: 100px;
@@ -1290,7 +1291,7 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Cache indicator -->
+        <!-- Cache indicator (optional - remove in production) -->
         <div class="cache-indicator" id="cacheIndicator">
             <i class="ph ph-database"></i> Cache enabled
         </div>
@@ -1343,7 +1344,7 @@
                 <!-- Dynamic content will be loaded here -->
             </div>
 
-            <!-- Footer -->
+            <!-- Footer - Shows on all pages -->
             <div class="footer-section">
                 <div class="footer-grid">
                     <!-- Newsletter -->
@@ -1422,11 +1423,6 @@
 
     <script type="module">
         // ============================================
-        // API CONFIGURATION - FIXED
-        // ============================================
-        const API_BASE = 'https://lyteit-backend.vercel.app/api';
-
-        // ============================================
         // FIREBASE AUTH (with CACHE ENABLED)
         // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
@@ -1446,7 +1442,9 @@
             getDoc,
             updateDoc,
             query,
-            orderBy
+            orderBy,
+            limit,
+            startAfter
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1463,7 +1461,7 @@
         const provider = new GoogleAuthProvider();
         
         // ============================================
-        // FIREBASE CACHING ENABLED
+        // 🔥 FIREBASE CACHING ENABLED HERE 🔥
         // ============================================
         const db = getFirestore(app);
         enableIndexedDbPersistence(db).catch((err) => {
@@ -1475,35 +1473,6 @@
                 document.getElementById('cacheIndicator').innerHTML = '<i class="ph ph-warning"></i> Cache not supported';
             }
         });
-
-        // ============================================
-        // VIEW TRACKING FUNCTION - FIXED
-        // ============================================
-        async function trackPostView(postId) {
-            if (!postId) return;
-            
-            try {
-                console.log('📊 Tracking view for post:', postId);
-                console.log('Calling:', `${API_BASE}/track-view`);
-                
-                const response = await fetch(`${API_BASE}/track-view`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ postId })
-                });
-                
-                if (!response.ok) {
-                    console.log('❌ View tracking failed with status:', response.status);
-                    const text = await response.text();
-                    console.log('Response:', text);
-                } else {
-                    const data = await response.json();
-                    console.log('✅ View tracked:', data);
-                }
-            } catch (error) {
-                console.log('❌ Track view error:', error);
-            }
-        }
 
         // ============================================
         // APP STATE
@@ -1534,7 +1503,9 @@
         // Explore filter
         let exploreCategory = 'all';
 
-        // Post cache
+        // ============================================
+        // OPTIMIZATION: Post cache
+        // ============================================
         const postCache = new Map();
         const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
@@ -1576,7 +1547,7 @@
         const PLAY_ICON_URL = "https://example.com";
 
         // ============================================
-        // CACHE FUNCTION
+        // OPTIMIZATION: Helper function with caching
         // ============================================
         async function getPostsWithCache() {
             const cacheKey = 'all-posts';
@@ -1651,6 +1622,7 @@
             
             try {
                 let postDate;
+                
                 if (timestamp && typeof timestamp === 'object' && timestamp.seconds) {
                     postDate = new Date(timestamp.seconds * 1000);
                 } else if (timestamp.toDate) {
@@ -1890,6 +1862,9 @@
         async function loadHomePage() {
             document.getElementById('mainContent').innerHTML = getHomePageHTML();
             try {
+                // ============================================
+                // OPTIMIZATION: Use cached posts
+                // ============================================
                 allPosts = await getPostsWithCache();
                 
                 if (allPosts.length === 0) {
@@ -1961,17 +1936,10 @@
             }
         };
 
-        // ============================================
-        // RENDER FUNCTIONS WITH VIEW TRACKING
-        // ============================================
         function renderArticlePost(post) {
-            // Track view when post is rendered
-            setTimeout(() => trackPostView(post.id), 100);
-            
             const expanded = expandedPosts.get(post.id) || false;
             const liked = userLikes.get(post.id) || false;
             const comments = post.comments || [];
-            const views = post.views || 0;
             
             return `
                 <div class="news-item" id="post-${post.id}">
@@ -1985,12 +1953,6 @@
                             <button class="read-more-btn" style="font-size:0.7rem;" onclick="toggleReadMore('${post.id}', false, event)">${expanded ? 'less' : 'more'}</button>
                         ` : ''}
                         <div class="interaction-bar">
-                            <!-- 👁️ VIEW COUNT -->
-                            <div class="interaction-item">
-                                <i class="ph ph-eye"></i>
-                                <span>${views.toLocaleString()}</span>
-                            </div>
-                            
                             <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}', event)">
                                 <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                 <span class="like-count">${post.likes || 0}</span>
@@ -2026,15 +1988,11 @@
         }
 
         function renderVideoPost(post) {
-            // Track view when post is rendered
-            setTimeout(() => trackPostView(post.id), 100);
-            
             const videoId = getYouTubeVideoId(post.youtubeUrl) || 'dQw4w9WgXcQ';
             const expanded = expandedPosts.get(post.id) || false;
             const liked = userLikes.get(post.id) || false;
             const played = videoPlayed.get(post.id) || false;
             const comments = post.comments || [];
-            const views = post.views || 0;
             
             return `
                 <div class="video-card" id="post-${post.id}">
@@ -2057,12 +2015,6 @@
                     ` : ''}
                     <div style="padding:0 15px 15px;">
                         <div class="interaction-bar" style="margin-top:0;">
-                            <!-- 👁️ VIEW COUNT -->
-                            <div class="interaction-item">
-                                <i class="ph ph-eye"></i>
-                                <span>${views.toLocaleString()}</span>
-                            </div>
-                            
                             <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${post.id}', event)">
                                 <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                 <span class="like-count">${post.likes || 0}</span>
@@ -2098,15 +2050,11 @@
         }
 
         async function renderFeaturedPost(featured) {
-            // Track view when post is rendered
-            setTimeout(() => trackPostView(featured.id), 100);
-            
             const el = document.getElementById('featuredSection');
             if (!el) return;
             
             const liked = userLikes.get(featured.id) || false;
             const comments = featured.comments || [];
-            const views = featured.views || 0;
             
             if (featured.type === 'video') {
                 const videoId = getYouTubeVideoId(featured.youtubeUrl) || 'dQw4w9WgXcQ';
@@ -2133,12 +2081,6 @@
                         ` : ''}
                         <div style="padding:0 15px 15px;">
                             <div class="interaction-bar" style="margin-top:0;">
-                                <!-- 👁️ VIEW COUNT -->
-                                <div class="interaction-item">
-                                    <i class="ph ph-eye"></i>
-                                    <span>${views.toLocaleString()}</span>
-                                </div>
-                                
                                 <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${featured.id}', event)">
                                     <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                     <span class="like-count">${featured.likes || 0}</span>
@@ -2188,12 +2130,6 @@
                             ` : ''}
                         </div>
                         <div class="interaction-bar">
-                            <!-- 👁️ VIEW COUNT -->
-                            <div class="interaction-item">
-                                <i class="ph ph-eye"></i>
-                                <span>${views.toLocaleString()}</span>
-                            </div>
-                            
                             <div class="interaction-item like-btn ${liked ? 'liked' : ''}" onclick="toggleLike('${featured.id}', event)">
                                 <i class="ph ${liked ? 'ph-fill ph-heart' : 'ph-heart'}"></i>
                                 <span class="like-count">${featured.likes || 0}</span>
@@ -2256,6 +2192,7 @@
                     list.innerHTML = '<div style="color: #8a8d91; text-align: center; padding: 10px;">Loading comments...</div>';
                 }
                 
+                // Get comments from the post object (already cached)
                 const post = allPosts.find(p => p.id === postId);
                 if (!post) return;
                 
@@ -2317,9 +2254,11 @@
             if (!text) return;
             
             try {
+                // For demo, we'll just update locally
                 input.value = '';
                 updateCharCount(postId);
                 
+                // Add comment to local state
                 const post = allPosts.find(p => p.id === postId);
                 if (post) {
                     const newComment = {
@@ -2331,11 +2270,13 @@
                     post.comments = post.comments || [];
                     post.comments.unshift(newComment);
                     
+                    // Update comment count
                     const countSpan = document.getElementById(`comment-count-${postId}`);
                     if (countSpan) {
                         countSpan.textContent = post.comments.length;
                     }
                     
+                    // Reload comments
                     await loadComments(postId, 1);
                 }
             } catch (error) {
@@ -2370,6 +2311,7 @@
 
         async function handleLike(postId) {
             try {
+                // For demo, just update locally
                 const post = allPosts.find(p => p.id === postId);
                 if (!post) return;
                 
@@ -2385,6 +2327,7 @@
                     post.likedBy = (post.likedBy || []).filter(id => id !== currentUser.uid);
                 }
                 
+                // Update UI
                 const postElement = document.getElementById(`post-${postId}`);
                 if (postElement) {
                     const likeBtn = postElement.querySelector('.like-btn');
@@ -2584,6 +2527,7 @@
 
         async function fetchMarkets() {
             try {
+                // Markets are already cached by the browser
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=true');
                 const coins = await response.json();
                 document.getElementById('marketUpdateTime').textContent = `Updated ${new Date().toLocaleTimeString()}`;

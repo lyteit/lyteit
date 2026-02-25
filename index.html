@@ -724,15 +724,76 @@
             margin-top: 6px;
         }
 
-        /* Explore Page */
-        .explore-search {
-            margin: 15px 0;
+        /* Explore Page - Improved */
+        .explore-header {
+            margin-bottom: 20px;
+        }
+        .explore-search-wrapper {
+            background: #1c1f24;
+            display: flex;
+            align-items: center;
+            padding: 12px 18px;
+            border-radius: 12px;
+            gap: 10px;
+            border: 1px solid #333;
+            transition: all 0.2s ease;
+            margin-bottom: 25px;
+        }
+        .explore-search-wrapper:focus-within {
+            border-color: #fab005;
+            box-shadow: 0 0 0 2px rgba(250, 176, 5, 0.2);
+        }
+        .explore-search-icon {
+            color: #8a8d91;
+            font-size: 1.2rem;
+        }
+        .explore-search-input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+        }
+        .explore-search-input::placeholder {
+            color: #8a8d91;
+        }
+        .explore-categories {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .explore-category-tag {
+            background: #1e2128;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            color: #8a8d91;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .explore-category-tag:hover {
+            border-color: #fab005;
+            color: #fab005;
+        }
+        .explore-category-tag.active {
+            background: #fab00520;
+            border-color: #fab005;
+            color: #fab005;
         }
         .explore-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
             margin-top: 20px;
+        }
+        @media (min-width: 768px) {
+            .explore-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
         }
         .explore-card {
             background: #15171a;
@@ -741,6 +802,8 @@
             padding: 20px;
             transition: all 0.2s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
         }
         .explore-card:hover {
             border-color: #fab005;
@@ -753,42 +816,51 @@
             margin-bottom: 12px;
         }
         .explore-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: #1e2128;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fab005;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
         }
-        .explore-title {
+        .explore-name {
             font-size: 1.1rem;
             font-weight: 600;
+            flex: 1;
         }
         .explore-category {
             font-size: 0.7rem;
             color: #fab005;
             background: #fab00520;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             display: inline-block;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            align-self: flex-start;
         }
         .explore-description {
             color: #8a8d91;
             font-size: 0.85rem;
             line-height: 1.5;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+            flex: 1;
         }
         .explore-url {
             color: #fab005;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            word-break: break-all;
             display: flex;
             align-items: center;
             gap: 5px;
-            word-break: break-all;
+            border-top: 1px solid #333;
+            padding-top: 12px;
+            margin-top: auto;
+        }
+        .explore-url i {
+            font-size: 0.9rem;
         }
 
         /* Markets Page */
@@ -811,6 +883,12 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 15px;
+        }
+        @media (min-width: 768px) {
+            .markets-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
         }
         .coin-card {
             background: #15171a;
@@ -1341,6 +1419,9 @@
         const videoPlayed = new Map();
         const expandedPosts = new Map();
 
+        // Explore filter
+        let exploreCategory = 'all';
+
         // ============================================
         // TRENDING TOPICS
         // ============================================
@@ -1357,13 +1438,24 @@
         // EXPLORE PAGE DATA
         // ============================================
         const exploreResources = [
-            { name: "CoinTelegraph", description: "Breaking news on cryptocurrency.", url: "https://cointelegraph.com", category: "News", icon: "ph-newspaper" },
-            { name: "CoinDesk", description: "Leading digital media for crypto.", url: "https://coindesk.com", category: "News", icon: "ph-newspaper" },
-            { name: "Bloomberg", description: "Global financial markets news.", url: "https://bloomberg.com", category: "News", icon: "ph-newspaper" },
-            { name: "CoinMarketCap", description: "Live crypto prices and market data.", url: "https://coinmarketcap.com", category: "Data", icon: "ph-chart-line" },
-            { name: "CoinGecko", description: "Comprehensive crypto data platform.", url: "https://coingecko.com", category: "Data", icon: "ph-chart-line" },
-            { name: "Investopedia", description: "Financial education and terms.", url: "https://investopedia.com", category: "Education", icon: "ph-book-open" }
+            { name: "CoinTelegraph", description: "Breaking news on cryptocurrency and blockchain technology.", url: "https://cointelegraph.com", category: "News", icon: "ph-newspaper" },
+            { name: "CoinDesk", description: "Leading digital media platform for crypto news and events.", url: "https://coindesk.com", category: "News", icon: "ph-newspaper" },
+            { name: "Bloomberg", description: "Global financial markets news, data, and analysis.", url: "https://bloomberg.com", category: "News", icon: "ph-newspaper" },
+            { name: "Reuters", description: "International financial news and market updates.", url: "https://reuters.com", category: "News", icon: "ph-newspaper" },
+            { name: "Financial Times", description: "In-depth financial analysis and global business news.", url: "https://ft.com", category: "News", icon: "ph-newspaper" },
+            { name: "CoinMarketCap", description: "Live cryptocurrency prices, charts, and market data.", url: "https://coinmarketcap.com", category: "Data", icon: "ph-chart-line" },
+            { name: "CoinGecko", description: "Comprehensive crypto data platform with prices and analytics.", url: "https://coingecko.com", category: "Data", icon: "ph-chart-line" },
+            { name: "TradingView", description: "Advanced charts and technical analysis for financial markets.", url: "https://tradingview.com", category: "Data", icon: "ph-chart-line" },
+            { name: "Yahoo Finance", description: "Stock market data, news, and financial information.", url: "https://finance.yahoo.com", category: "Data", icon: "ph-chart-line" },
+            { name: "Investopedia", description: "Financial education - learn about investing and markets.", url: "https://investopedia.com", category: "Education", icon: "ph-book-open" },
+            { name: "Bitcoin.org", description: "Official Bitcoin resource. Beginner guides and whitepaper.", url: "https://bitcoin.org", category: "Education", icon: "ph-book-open" },
+            { name: "Ethereum.org", description: "Official Ethereum portal. Learn about ETH and Web3.", url: "https://ethereum.org", category: "Education", icon: "ph-book-open" },
+            { name: "CoinBureau", description: "In-depth crypto reviews and market analysis videos.", url: "https://youtube.com/@coinbureau", category: "Video", icon: "ph-youtube-logo" },
+            { name: "Bankless", description: "DeFi and crypto culture discussions with industry leaders.", url: "https://bankless.com", category: "Video", icon: "ph-headphones" },
+            { name: "Bloomberg Markets", description: "Financial news coverage and market analysis.", url: "https://bloomberg.com/markets", category: "Video", icon: "ph-youtube-logo" }
         ];
+
+        const categories = ['All', 'News', 'Data', 'Education', 'Video'];
 
         const PLAY_ICON_URL = "https://example.com";
 
@@ -1488,15 +1580,31 @@
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             updateUserProfile();
+            
+            // Reload user likes when user changes
+            if (user) {
+                loadUserLikes();
+            } else {
+                userLikes.clear();
+                // Re-render current view to show unliked state
+                if (currentPage === 'home') {
+                    loadHomePage();
+                }
+            }
+            
             if (pendingAction && user) {
-                const { type, postId } = pendingAction;
-                if (type === 'like') handleLike(postId);
-                else if (type === 'comment') {
+                const { type, postId, text } = pendingAction;
+                if (type === 'like') {
+                    handleLike(postId);
+                } else if (type === 'comment') {
                     const section = document.getElementById(`comments-${postId}`);
                     if (section) {
                         section.style.display = 'block';
                         const input = section.querySelector('.comment-input');
-                        if (input) input.focus();
+                        if (input) {
+                            input.focus();
+                            if (text) input.value = text;
+                        }
                     }
                 }
                 pendingAction = null;
@@ -1529,6 +1637,7 @@
                 await signInWithPopup(auth, provider);
                 showPopup('Welcome!', 'Signed in successfully');
             } catch (error) {
+                console.error('Sign-in error:', error);
                 showPopup('Error', 'Failed to sign in');
             }
         };
@@ -1536,31 +1645,52 @@
         window.handleSignOut = async () => {
             try {
                 await signOut(auth);
-                userLikes.clear(); // Clear likes on sign out
+                userLikes.clear();
                 showPopup('Signed Out', 'See you next time!');
             } catch (error) {
+                console.error('Sign-out error:', error);
                 showPopup('Error', 'Failed to sign out');
             }
         };
 
         // ============================================
-        // LOAD USER LIKES (NEW FUNCTION)
+        // LOAD USER LIKES
         // ============================================
         async function loadUserLikes() {
             if (!currentUser || !allPosts.length) return;
             
-            // Since we don't have a dedicated endpoint to get user likes,
-            // we check each post's likedBy array
+            // Clear existing likes
+            userLikes.clear();
+            
+            // Check each post's likedBy array
             for (const post of allPosts) {
                 if (post.likedBy && Array.isArray(post.likedBy) && post.likedBy.includes(currentUser.uid)) {
                     userLikes.set(post.id, true);
                 }
             }
             
-            // Re-render current view to show liked state
-            if (currentPage === 'home') {
-                await loadHomePage();
-            }
+            // Update UI to show liked state
+            updateAllLikeButtons();
+        }
+
+        function updateAllLikeButtons() {
+            // Update all posts that are currently rendered
+            document.querySelectorAll('[id^="post-"]').forEach(postElement => {
+                const postId = postElement.id.replace('post-', '');
+                const liked = userLikes.get(postId) || false;
+                const likeBtn = postElement.querySelector('.like-btn');
+                const likeIcon = likeBtn?.querySelector('i');
+                
+                if (likeBtn && likeIcon) {
+                    if (liked) {
+                        likeBtn.classList.add('liked');
+                        likeIcon.className = 'ph-fill ph-heart';
+                    } else {
+                        likeBtn.classList.remove('liked');
+                        likeIcon.className = 'ph ph-heart';
+                    }
+                }
+            });
         }
 
         // ============================================
@@ -1608,16 +1738,17 @@
             try {
                 allPosts = await fetchPosts();
                 
-                // After loading posts, load user likes if signed in
-                if (currentUser) {
-                    await loadUserLikes();
-                }
-                
                 if (allPosts.length === 0) {
                     document.getElementById('featuredSection').innerHTML = '<div class="loading">No news yet</div>';
                     document.getElementById('loadMoreContainer').style.display = 'none';
                     return;
                 }
+                
+                // Load user likes if signed in
+                if (currentUser) {
+                    await loadUserLikes();
+                }
+                
                 const featured = allPosts.filter(p => p.featured === true);
                 featuredPost = featured.length ? featured[Math.floor(Math.random() * featured.length)] : allPosts[Math.floor(Math.random() * allPosts.length)];
                 displayedPosts = allPosts.filter(p => p.id !== featuredPost.id);
@@ -1626,6 +1757,7 @@
                 await loadMorePosts(true);
                 setupSearch();
             } catch (error) {
+                console.error('Error loading home page:', error);
                 document.getElementById('featuredSection').innerHTML = '<div class="loading" style="color:#ff5252;">Error loading news</div>';
             }
         }
@@ -1656,8 +1788,11 @@
                 
                 // Load comments for each post
                 for (const p of posts) {
-                    await loadComments(p.id, 1, true); // silent load (don't show loading)
+                    await loadComments(p.id, 1, true);
                 }
+                
+                // Update like buttons for newly rendered posts
+                updateAllLikeButtons();
                 
                 if (btn) {
                     if (currentDisplayCount >= displayedPosts.length) {
@@ -1669,6 +1804,7 @@
                     }
                 }
             } catch (error) {
+                console.error('Error loading more posts:', error);
                 if (btn) { btn.innerHTML = '<i class="ph ph-arrow-down"></i> Try Again'; btn.disabled = false; }
             }
         };
@@ -1899,6 +2035,9 @@
             
             // Load comments for featured post
             await loadComments(featured.id, 1, true);
+            
+            // Update like button for featured post
+            updateAllLikeButtons();
         }
 
         // ============================================
@@ -1973,7 +2112,9 @@
         window.addComment = async function(postId, event) {
             if (event) event.stopPropagation();
             if (!currentUser) {
-                pendingAction = { type: 'comment', postId };
+                const input = document.querySelector(`#comments-${postId} .comment-input`);
+                const text = input?.value.trim() || '';
+                pendingAction = { type: 'comment', postId, text };
                 signInWithGoogle();
                 return;
             }
@@ -1998,9 +2139,14 @@
                 const post = allPosts.find(p => p.id === postId);
                 if (post) {
                     post.comments = post.comments || [];
-                    post.comments.push({ text, author: currentUser.displayName || 'Anonymous', time: new Date().toLocaleString() });
+                    post.comments.push({ 
+                        text, 
+                        author: currentUser.displayName || 'Anonymous', 
+                        time: new Date().toLocaleString() 
+                    });
                 }
             } catch (error) {
+                console.error('Error adding comment:', error);
                 showPopup('Error', 'Failed to add comment');
             }
         };
@@ -2033,14 +2179,27 @@
             try {
                 const result = await likePost(postId);
                 if (result.success) {
+                    // Update local state
+                    const liked = userLikes.get(postId) || false;
+                    userLikes.set(postId, !liked);
+                    
+                    // Update UI
                     const post = document.getElementById(`post-${postId}`);
-                    const btn = post?.querySelector('.like-btn');
-                    const count = post?.querySelector('.like-count');
-                    if (btn && count) {
-                        const liked = userLikes.get(postId) || false;
-                        userLikes.set(postId, !liked);
-                        btn.classList.toggle('liked', !liked);
-                        count.textContent = result.likes;
+                    if (post) {
+                        const likeBtn = post.querySelector('.like-btn');
+                        const likeIcon = likeBtn?.querySelector('i');
+                        const likeCount = post.querySelector('.like-count');
+                        
+                        if (likeBtn && likeIcon && likeCount) {
+                            if (!liked) {
+                                likeBtn.classList.add('liked');
+                                likeIcon.className = 'ph-fill ph-heart';
+                            } else {
+                                likeBtn.classList.remove('liked');
+                                likeIcon.className = 'ph ph-heart';
+                            }
+                            likeCount.textContent = result.likes;
+                        }
                     }
                     
                     // Also update the post object
@@ -2056,7 +2215,8 @@
                     }
                 }
             } catch (error) {
-                showPopup('Error', 'Failed to like');
+                console.error('Error liking post:', error);
+                showPopup('Error', 'Failed to like post');
             }
         }
 
@@ -2135,6 +2295,9 @@
             for (const p of filtered) {
                 await loadComments(p.id, 1, true);
             }
+            
+            // Update like buttons
+            updateAllLikeButtons();
         }
 
         window.clearSearch = function() {
@@ -2144,36 +2307,82 @@
         };
 
         // ============================================
-        // EXPLORE PAGE
+        // EXPLORE PAGE (Improved)
         // ============================================
         function loadExplorePage() {
             document.getElementById('mainContent').innerHTML = `
                 <div class="page-indicator"><i class="ph ph-compass"></i> Explore</div>
-                <div class="explore-search"><div class="search-wrapper"><i class="ph ph-magnifying-glass"></i><input type="text" id="exploreSearch" placeholder="Search resources..."></div></div>
-                <div class="explore-grid" id="exploreGrid">${exploreResources.map(r => `
-                    <div class="explore-card" onclick="window.open('${r.url}','_blank')">
-                        <div class="explore-icon"><i class="ph ${r.icon}"></i></div>
-                        <div class="explore-title">${r.name}</div>
-                        <div class="explore-category">${r.category}</div>
-                        <div class="explore-description">${r.description}</div>
-                        <div class="explore-url">${r.url}</div>
+                <div class="explore-header">
+                    <div class="explore-search-wrapper">
+                        <i class="ph ph-magnifying-glass explore-search-icon"></i>
+                        <input type="text" class="explore-search-input" id="exploreSearch" placeholder="Search resources by name, description, or category...">
                     </div>
-                `).join('')}</div>
+                    <div class="explore-categories" id="exploreCategories">
+                        ${categories.map(cat => `
+                            <span class="explore-category-tag ${cat.toLowerCase() === exploreCategory ? 'active' : ''}" onclick="filterExploreByCategory('${cat.toLowerCase()}')">${cat}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="explore-grid" id="exploreGrid">
+                    ${renderExploreResources(exploreResources)}
+                </div>
             `;
+            
             document.getElementById('exploreSearch')?.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
-                document.getElementById('exploreGrid').innerHTML = exploreResources.filter(r => 
-                    r.name.toLowerCase().includes(term) || r.description.toLowerCase().includes(term)
-                ).map(r => `
-                    <div class="explore-card" onclick="window.open('${r.url}','_blank')">
-                        <div class="explore-icon"><i class="ph ${r.icon}"></i></div>
-                        <div class="explore-title">${r.name}</div>
-                        <div class="explore-category">${r.category}</div>
-                        <div class="explore-description">${r.description}</div>
-                        <div class="explore-url">${r.url}</div>
-                    </div>
-                `).join('');
+                filterExplore(term, exploreCategory);
             });
+        }
+
+        window.filterExploreByCategory = function(category) {
+            exploreCategory = category;
+            // Update active class
+            document.querySelectorAll('.explore-category-tag').forEach(tag => {
+                if (tag.textContent.toLowerCase() === category || (category === 'all' && tag.textContent.toLowerCase() === 'all')) {
+                    tag.classList.add('active');
+                } else {
+                    tag.classList.remove('active');
+                }
+            });
+            
+            const searchTerm = document.getElementById('exploreSearch')?.value.toLowerCase() || '';
+            filterExplore(searchTerm, category);
+        };
+
+        function filterExplore(searchTerm = '', category = 'all') {
+            const filtered = exploreResources.filter(r => {
+                const matchesSearch = searchTerm === '' || 
+                    r.name.toLowerCase().includes(searchTerm) || 
+                    r.description.toLowerCase().includes(searchTerm) ||
+                    r.category.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = category === 'all' || r.category.toLowerCase() === category;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            document.getElementById('exploreGrid').innerHTML = renderExploreResources(filtered);
+        }
+
+        function renderExploreResources(resources) {
+            if (resources.length === 0) {
+                return '<div class="loading">No resources found</div>';
+            }
+            
+            return resources.map(r => `
+                <div class="explore-card" onclick="window.open('${r.url}','_blank')">
+                    <div class="explore-card-header">
+                        <div class="explore-icon"><i class="ph ${r.icon}"></i></div>
+                        <div class="explore-name">${r.name}</div>
+                    </div>
+                    <span class="explore-category">${r.category}</span>
+                    <div class="explore-description">${r.description}</div>
+                    <div class="explore-url">
+                        <i class="ph ph-link"></i>
+                        ${r.url.replace('https://', '').replace('http://', '')}
+                    </div>
+                </div>
+            `).join('');
         }
 
         // ============================================
@@ -2209,13 +2418,28 @@
                         if (canvas && c.sparkline_in_7d?.price) {
                             new Chart(canvas, {
                                 type: 'line',
-                                data: { labels: c.sparkline_in_7d.price.map((_,i)=>i), datasets: [{ data: c.sparkline_in_7d.price, borderColor: c.price_change_percentage_24h >= 0 ? '#00c853' : '#ff5252', borderWidth: 2, pointRadius: 0 }] },
-                                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+                                data: { 
+                                    labels: c.sparkline_in_7d.price.map((_,i)=>i), 
+                                    datasets: [{ 
+                                        data: c.sparkline_in_7d.price, 
+                                        borderColor: c.price_change_percentage_24h >= 0 ? '#00c853' : '#ff5252', 
+                                        borderWidth: 2, 
+                                        pointRadius: 0,
+                                        tension: 0.4
+                                    }] 
+                                },
+                                options: { 
+                                    responsive: true, 
+                                    maintainAspectRatio: false, 
+                                    plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
+                                    scales: { x: { display: false }, y: { display: false } } 
+                                }
                             });
                         }
                     });
                 }
             } catch (error) {
+                console.error('Error fetching markets:', error);
                 document.getElementById('marketsGrid').innerHTML = '<div class="loading" style="color:#ff5252;">Failed to load market data</div>';
             }
         }

@@ -10,7 +10,7 @@
     <!-- Chart.js for simple charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* ALL YOUR EXISTING STYLES - KEEP THEM EXACTLY THE SAME */
+        /* ALL YOUR EXISTING STYLES - KEPT EXACTLY THE SAME */
         * {
             margin: 0;
             padding: 0;
@@ -1287,6 +1287,35 @@
             opacity: 0.7;
             pointer-events: none;
         }
+        
+        /* RSS Refresh Button */
+        .rss-refresh-btn {
+            background: #1e2128;
+            border: 1px solid #333;
+            color: #fab005;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+            transition: all 0.2s ease;
+        }
+        .rss-refresh-btn:hover {
+            border-color: #fab005;
+            background: #2a2f38;
+        }
+        .rss-source-badge {
+            font-size: 0.65rem;
+            color: #fab005;
+            display: inline-block;
+            background: #fab00520;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin: 4px 0;
+        }
     </style>
 </head>
 <body>
@@ -1438,14 +1467,10 @@
             enableIndexedDbPersistence,
             collection,
             getDocs,
-            doc,
-            getDoc,
-            updateDoc,
             query,
-            orderBy,
-            limit,
-            startAfter
+            orderBy
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+        import Parser from 'https://esm.sh/rss-parser@3.13.0';
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWsW8NaC-fs50D1hXganYW9gPCDUXRaMc",
@@ -1482,6 +1507,7 @@
         let userLikes = new Map();
         let currentPage = 'home';
         let allPosts = [];
+        let allRssPosts = [];
         let searchTerm = '';
         
         // Lazy loading states
@@ -1510,73 +1536,112 @@
         const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
         // ============================================
+        // RSS PARSER SETUP
+        // ============================================
+        const rssParser = new Parser({
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (compatible; lyteit-bot/1.0)'
+            },
+            timeout: 10000,
+            customFields: {
+                item: [
+                    ['media:content', 'mediaContent', { keepArray: true }],
+                    ['media:thumbnail', 'mediaThumbnail', { keepArray: true }],
+                    ['enclosure', 'enclosure', { keepArray: true }]
+                ]
+            }
+        });
+
+        // ============================================
+        // RSS FEEDS - Organized by category
+        // ============================================
+        const RSS_FEEDS = [
+            // Crypto News
+            {
+                name: 'CoinTelegraph',
+                url: 'https://cointelegraph.com/rss',
+                category: 'news',
+                region: 'global',
+                icon: 'ph-lightning'
+            },
+            // Stocks/Markets News
+            {
+                name: 'MarketWatch',
+                url: 'https://feeds.content.dowjones.io/public/rss/mw_topstories',
+                category: 'news',
+                region: 'global',
+                icon: 'ph-chart-line'
+            },
+            {
+                name: 'Investing.com',
+                url: 'https://www.investing.com/rss/news_25.rss',
+                category: 'news',
+                region: 'global',
+                icon: 'ph-trend-up'
+            },
+            {
+                name: 'CNBC',
+                url: 'https://www.cnbc.com/id/20409666/device/rss/rss.html',
+                category: 'news',
+                region: 'global',
+                icon: 'ph-broadcast'
+            },
+            // Nigeria Finance
+            {
+                name: 'Entrepreneur Business Blog',
+                url: 'https://www.entrepreneurbusinessblog.com/feed/',
+                category: 'news',
+                region: 'nigeria',
+                icon: 'ph-buildings'
+            },
+            {
+                name: 'Nairametrics',
+                url: 'https://nairametrics.com/feed/',
+                category: 'news',
+                region: 'nigeria',
+                icon: 'ph-chart-pie'
+            },
+            {
+                name: 'Investing Nigeria',
+                url: 'https://ng.investing.com/rss/market_overview_investing_ideas.rss',
+                category: 'news',
+                region: 'nigeria',
+                icon: 'ph-map-pin'
+            }
+        ];
+
+        // ============================================
+        // EXPLORE PAGE DATA (Non-RSS resources)
+        // ============================================
+        const exploreResources = [
+            // Data Resources
+            { name: "CoinMarketCap", description: "Live cryptocurrency prices, charts, and market data.", url: "https://coinmarketcap.com", category: "data", icon: "ph-chart-line" },
+            { name: "CoinGecko", description: "Comprehensive crypto data platform with prices and analytics.", url: "https://coingecko.com", category: "data", icon: "ph-chart-line" },
+            { name: "TradingView", description: "Advanced charts and technical analysis for financial markets.", url: "https://tradingview.com", category: "data", icon: "ph-chart-line" },
+            { name: "Yahoo Finance", description: "Stock market data, news, and financial information.", url: "https://finance.yahoo.com", category: "data", icon: "ph-chart-line" },
+            // Education Resources
+            { name: "Investopedia", description: "Financial education - learn about investing and markets.", url: "https://investopedia.com", category: "education", icon: "ph-book-open" },
+            { name: "Bitcoin.org", description: "Official Bitcoin resource. Beginner guides and whitepaper.", url: "https://bitcoin.org", category: "education", icon: "ph-book-open" },
+            { name: "Ethereum.org", description: "Official Ethereum portal. Learn about ETH and Web3.", url: "https://ethereum.org", category: "education", icon: "ph-book-open" },
+            // Video Resources
+            { name: "CoinBureau", description: "In-depth crypto reviews and market analysis videos.", url: "https://youtube.com/@coinbureau", category: "video", icon: "ph-youtube-logo" },
+            { name: "Bankless", description: "DeFi and crypto culture discussions with industry leaders.", url: "https://bankless.com", category: "video", icon: "ph-headphones" },
+            { name: "Bloomberg Markets", description: "Financial news coverage and market analysis.", url: "https://bloomberg.com/markets", category: "video", icon: "ph-youtube-logo" }
+        ];
+
+        const categories = ['All', 'News', 'Data', 'Education', 'Video'];
+
+        // ============================================
         // TRENDING TOPICS
         // ============================================
         const trendingTopics = [
             { topic: "#BitcoinHalving", posts: "2.3K", icon: "ph-lightning" },
             { topic: "SEC vs Ripple", posts: "1.8K", icon: "ph-scales" },
             { topic: "Ethereum Upgrade", posts: "1.2K", icon: "ph-code" },
-            { topic: "Memecoin Mania", posts: "4.1K", icon: "ph-rocket" },
+            { topic: "Nigeria Economy", posts: "4.1K", icon: "ph-flag" },
             { topic: "Fed Decision", posts: "892", icon: "ph-chart-line-up" },
-            { topic: "DeFi Summer", posts: "3.2K", icon: "ph-drop" }
+            { topic: "NGX All Share", posts: "3.2K", icon: "ph-trend-up" }
         ];
-
-        // ============================================
-        // EXPLORE PAGE DATA
-        // ============================================
-        const exploreResources = [
-            { name: "CoinTelegraph", description: "Breaking news on cryptocurrency and blockchain technology.", url: "https://cointelegraph.com", category: "News", icon: "ph-newspaper" },
-            { name: "CoinDesk", description: "Leading digital media platform for crypto news and events.", url: "https://coindesk.com", category: "News", icon: "ph-newspaper" },
-            { name: "Bloomberg", description: "Global financial markets news, data, and analysis.", url: "https://bloomberg.com", category: "News", icon: "ph-newspaper" },
-            { name: "Reuters", description: "International financial news and market updates.", url: "https://reuters.com", category: "News", icon: "ph-newspaper" },
-            { name: "Financial Times", description: "In-depth financial analysis and global business news.", url: "https://ft.com", category: "News", icon: "ph-newspaper" },
-            { name: "CoinMarketCap", description: "Live cryptocurrency prices, charts, and market data.", url: "https://coinmarketcap.com", category: "Data", icon: "ph-chart-line" },
-            { name: "CoinGecko", description: "Comprehensive crypto data platform with prices and analytics.", url: "https://coingecko.com", category: "Data", icon: "ph-chart-line" },
-            { name: "TradingView", description: "Advanced charts and technical analysis for financial markets.", url: "https://tradingview.com", category: "Data", icon: "ph-chart-line" },
-            { name: "Yahoo Finance", description: "Stock market data, news, and financial information.", url: "https://finance.yahoo.com", category: "Data", icon: "ph-chart-line" },
-            { name: "Investopedia", description: "Financial education - learn about investing and markets.", url: "https://investopedia.com", category: "Education", icon: "ph-book-open" },
-            { name: "Bitcoin.org", description: "Official Bitcoin resource. Beginner guides and whitepaper.", url: "https://bitcoin.org", category: "Education", icon: "ph-book-open" },
-            { name: "Ethereum.org", description: "Official Ethereum portal. Learn about ETH and Web3.", url: "https://ethereum.org", category: "Education", icon: "ph-book-open" },
-            { name: "CoinBureau", description: "In-depth crypto reviews and market analysis videos.", url: "https://youtube.com/@coinbureau", category: "Video", icon: "ph-youtube-logo" },
-            { name: "Bankless", description: "DeFi and crypto culture discussions with industry leaders.", url: "https://bankless.com", category: "Video", icon: "ph-headphones" },
-            { name: "Bloomberg Markets", description: "Financial news coverage and market analysis.", url: "https://bloomberg.com/markets", category: "Video", icon: "ph-youtube-logo" }
-        ];
-
-        const categories = ['All', 'News', 'Data', 'Education', 'Video'];
-
-        const PLAY_ICON_URL = "https://example.com";
-
-        // ============================================
-        // OPTIMIZATION: Helper function with caching
-        // ============================================
-        async function getPostsWithCache() {
-            const cacheKey = 'all-posts';
-            const cached = postCache.get(cacheKey);
-            
-            if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
-                console.log('Serving posts from cache');
-                document.getElementById('cacheIndicator').innerHTML = '<i class="ph ph-database"></i> Using cache';
-                return cached.data;
-            }
-            
-            console.log('Fetching fresh posts from Firestore');
-            document.getElementById('cacheIndicator').innerHTML = '<i class="ph ph-cloud-arrow-up"></i> Fetching fresh data';
-            
-            const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-            const snapshot = await getDocs(q);
-            
-            const posts = [];
-            snapshot.forEach(doc => {
-                posts.push({ id: doc.id, ...doc.data() });
-            });
-            
-            postCache.set(cacheKey, {
-                data: posts,
-                timestamp: Date.now()
-            });
-            
-            return posts;
-        }
 
         // ============================================
         // HELPER FUNCTIONS
@@ -1660,6 +1725,159 @@
             } catch (error) {
                 return 'Just now';
             }
+        }
+
+        // Extract image from RSS item
+        function extractImageFromFeedItem(item, feedName) {
+            // Try media:content first
+            if (item.mediaContent && item.mediaContent.length > 0) {
+                const media = item.mediaContent[0];
+                if (media.$ && media.$.url) return media.$.url;
+            }
+            
+            // Try media:thumbnail
+            if (item.mediaThumbnail && item.mediaThumbnail.length > 0) {
+                const thumb = item.mediaThumbnail[0];
+                if (thumb.$ && thumb.$.url) return thumb.$.url;
+            }
+            
+            // Try enclosure
+            if (item.enclosure && item.enclosure.length > 0) {
+                const enc = item.enclosure[0];
+                if (enc.$ && enc.$.url) return enc.$.url;
+            }
+            
+            // Extract from content
+            if (item.content) {
+                const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+                if (imgMatch && imgMatch[1]) return imgMatch[1];
+            }
+            
+            // Default fallback images by source
+            const fallbacks = {
+                'CoinTelegraph': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0',
+                'MarketWatch': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3',
+                'Investing.com': 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f',
+                'CNBC': 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1',
+                'Entrepreneur Business Blog': 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab',
+                'Nairametrics': 'https://images.unsplash.com/photo-1460472178825-e5240623afd5',
+                'Investing Nigeria': 'https://images.unsplash.com/photo-1523805009345-744884458755'
+            };
+            
+            return fallbacks[feedName] || 'https://images.unsplash.com/photo-1621761126064-fdd80772bc22';
+        }
+
+        // ============================================
+        // FETCH RSS FEEDS
+        // ============================================
+        async function fetchAllRssFeeds() {
+            console.log('Fetching RSS feeds...');
+            document.getElementById('cacheIndicator').innerHTML = '<i class="ph ph-cloud-arrow-up"></i> Fetching RSS feeds';
+            
+            try {
+                const allArticles = [];
+                
+                // Fetch all feeds in parallel
+                const feedPromises = RSS_FEEDS.map(async (feed) => {
+                    try {
+                        const result = await rssParser.parseURL(feed.url);
+                        
+                        // Transform to match your existing post structure
+                        const articles = result.items.slice(0, 10).map(item => ({
+                            id: `rss-${feed.name}-${item.guid || item.link || Date.now()}`,
+                            title: item.title || 'No title',
+                            content: item.contentSnippet || item.summary || item.content || '',
+                            image: extractImageFromFeedItem(item, feed.name),
+                            source: feed.name,
+                            sourceUrl: item.link,
+                            category: 'news',
+                            region: feed.region,
+                            type: 'article',
+                            createdAt: item.isoDate ? new Date(item.isoDate) : new Date(),
+                            likes: 0,
+                            comments: [],
+                            featured: false,
+                            rss: true
+                        }));
+                        
+                        return articles;
+                    } catch (error) {
+                        console.error(`Error fetching ${feed.name}:`, error);
+                        return [];
+                    }
+                });
+                
+                const results = await Promise.all(feedPromises);
+                
+                // Flatten and sort by date
+                allArticles.push(...results.flat());
+                allArticles.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                document.getElementById('cacheIndicator').innerHTML = 
+                    `<i class="ph ph-database"></i> RSS: ${allArticles.length} articles`;
+                
+                return allArticles;
+            } catch (error) {
+                console.error('Error fetching RSS feeds:', error);
+                return [];
+            }
+        }
+
+        // ============================================
+        // GET FIREBASE POSTS
+        // ============================================
+        async function getFirebasePosts() {
+            const cacheKey = 'firebase-posts';
+            const cached = postCache.get(cacheKey);
+            
+            if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+                console.log('Serving Firebase posts from cache');
+                return cached.data;
+            }
+            
+            console.log('Fetching fresh posts from Firestore');
+            
+            try {
+                const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                const posts = [];
+                snapshot.forEach(doc => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                
+                postCache.set(cacheKey, {
+                    data: posts,
+                    timestamp: Date.now()
+                });
+                
+                return posts;
+            } catch (error) {
+                console.error('Error fetching Firebase posts:', error);
+                return [];
+            }
+        }
+
+        // ============================================
+        // GET ALL POSTS (Firebase + RSS)
+        // ============================================
+        async function getAllPosts() {
+            const [firebasePosts, rssPosts] = await Promise.all([
+                getFirebasePosts(),
+                fetchAllRssFeeds()
+            ]);
+            
+            allRssPosts = rssPosts;
+            
+            // Merge and sort by date
+            const merged = [...firebasePosts, ...rssPosts];
+            merged.sort((a, b) => {
+                const dateA = a.createdAt?.seconds ? new Date(a.createdAt.seconds * 1000) : new Date(a.createdAt);
+                const dateB = b.createdAt?.seconds ? new Date(b.createdAt.seconds * 1000) : new Date(b.createdAt);
+                return dateB - dateA;
+            });
+            
+            return merged;
         }
 
         // ============================================
@@ -1839,7 +2057,7 @@
                 homeTrending.style.display = 'none';
                 if (page === 'explore') loadExplorePage();
                 else if (page === 'markets') loadMarketsPage();
-                else if (page === 'play') { window.open(PLAY_ICON_URL, '_blank'); navigateTo('home'); }
+                else if (page === 'play') { window.open('https://example.com', '_blank'); navigateTo('home'); }
                 else if (page === 'menu') { showPopup('Menu', 'Coming soon!'); navigateTo('home'); }
             }
         };
@@ -1849,7 +2067,10 @@
         // ============================================
         function getHomePageHTML() {
             return `
-                <div class="page-indicator"><i class="ph ph-house"></i> Home</div>
+                <div class="page-indicator">
+                    <i class="ph ph-house"></i> Home
+                    <button class="rss-refresh-btn" onclick="refreshRSS()"><i class="ph ph-arrow-clockwise"></i> Refresh News</button>
+                </div>
                 <div id="searchResultsHeader" class="search-results-header" style="display: none;"></div>
                 <div id="featuredSection"></div>
                 <div class="news-list" id="newsList"></div>
@@ -1859,13 +2080,23 @@
             `;
         }
 
+        window.refreshRSS = async function() {
+            const btn = document.querySelector('.rss-refresh-btn');
+            btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Refreshing...';
+            btn.disabled = true;
+            
+            // Clear RSS cache
+            postCache.delete('rss-posts');
+            await loadHomePage();
+            
+            btn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Refresh News';
+            btn.disabled = false;
+        };
+
         async function loadHomePage() {
             document.getElementById('mainContent').innerHTML = getHomePageHTML();
             try {
-                // ============================================
-                // OPTIMIZATION: Use cached posts
-                // ============================================
-                allPosts = await getPostsWithCache();
+                allPosts = await getAllPosts();
                 
                 if (allPosts.length === 0) {
                     document.getElementById('featuredSection').innerHTML = '<div class="loading">No news yet</div>';
@@ -1878,7 +2109,7 @@
                 }
                 
                 const featured = allPosts.filter(p => p.featured === true);
-                featuredPost = featured.length ? featured[Math.floor(Math.random() * featured.length)] : allPosts[Math.floor(Math.random() * allPosts.length)];
+                featuredPost = featured.length ? featured[Math.floor(Math.random() * featured.length)] : allPosts[0];
                 displayedPosts = allPosts.filter(p => p.id !== featuredPost.id);
                 currentDisplayCount = 0;
                 await renderFeaturedPost(featuredPost);
@@ -1946,6 +2177,12 @@
                     <img src="${post.image}" class="news-item-img" onerror="this.src='https://images.unsplash.com/photo-1621761126064-fdd80772bc22'">
                     <div class="news-item-content">
                         <div class="news-item-title">${post.title}</div>
+                        ${post.source ? `
+                            <div class="rss-source-badge">
+                                <i class="ph ph-newspaper"></i> ${post.source}
+                                ${post.region === 'nigeria' ? '<i class="ph ph-flag" style="margin-left:4px;"></i>' : ''}
+                            </div>
+                        ` : ''}
                         <div class="post-content-container" data-full-content="${(post.content || '').replace(/"/g, '&quot;')}">
                             ${expanded ? formatContent(post.content) : truncateForPreview(post.content, 100)}
                         </div>
@@ -2118,6 +2355,11 @@
                     <div class="featured-card" id="post-${featured.id}">
                         <img src="${featured.image}" class="featured-img" onerror="this.src='https://images.unsplash.com/photo-1639762681485-074b7f938ba0'">
                         <h1 class="featured-title">${featured.title}</h1>
+                        ${featured.source ? `
+                            <div class="rss-source-badge" style="margin:5px 0;">
+                                <i class="ph ph-newspaper"></i> ${featured.source}
+                            </div>
+                        ` : ''}
                         <div class="meta-info"><span><i class="ph ph-clock"></i> ${getRelativeTime(featured.createdAt || featured.timestamp)}</span></div>
                         <div class="featured-content">
                             <div class="post-content-container" data-full-content="${(featured.content || '').replace(/"/g, '&quot;')}">
@@ -2407,8 +2649,11 @@
             isSearching = true;
             const lower = term.toLowerCase();
             const filtered = allPosts.filter(p => {
-                if (p.type === 'video') return p.title.toLowerCase().includes(lower) || (p.description || '').toLowerCase().includes(lower);
-                return p.title.toLowerCase().includes(lower) || (p.content || '').toLowerCase().includes(lower);
+                if (p.type === 'video') {
+                    return p.title.toLowerCase().includes(lower) || (p.description || '').toLowerCase().includes(lower);
+                }
+                return p.title.toLowerCase().includes(lower) || (p.content || '').toLowerCase().includes(lower) || 
+                       (p.source && p.source.toLowerCase().includes(lower));
             });
             document.getElementById('featuredSection').style.display = 'none';
             document.getElementById('loadMoreContainer').style.display = 'none';
@@ -2453,13 +2698,13 @@
                     </div>
                 </div>
                 <div class="explore-grid" id="exploreGrid">
-                    ${renderExploreResources(exploreResources)}
+                    ${renderExploreContent('all')}
                 </div>
             `;
             
             document.getElementById('exploreSearch')?.addEventListener('input', (e) => {
                 const term = e.target.value.toLowerCase();
-                filterExplore(term, exploreCategory);
+                filterExploreContent(term, exploreCategory);
             });
         }
 
@@ -2474,43 +2719,134 @@
             });
             
             const searchTerm = document.getElementById('exploreSearch')?.value.toLowerCase() || '';
-            filterExplore(searchTerm, category);
+            filterExploreContent(searchTerm, category);
         };
 
-        function filterExplore(searchTerm = '', category = 'all') {
-            const filtered = exploreResources.filter(r => {
-                const matchesSearch = searchTerm === '' || 
-                    r.name.toLowerCase().includes(searchTerm) || 
-                    r.description.toLowerCase().includes(searchTerm) ||
-                    r.category.toLowerCase().includes(searchTerm);
+        function renderExploreContent(category, searchTerm = '') {
+            if (category === 'all') {
+                // Show RSS articles + all resources
+                const rssArticles = allRssPosts.slice(0, 10).map(post => ({
+                    ...post,
+                    exploreType: 'rss'
+                }));
                 
-                const matchesCategory = category === 'all' || r.category.toLowerCase() === category;
+                const allItems = [...rssArticles, ...exploreResources];
                 
-                return matchesSearch && matchesCategory;
-            });
-            
-            document.getElementById('exploreGrid').innerHTML = renderExploreResources(filtered);
+                // Filter by search term
+                const filtered = allItems.filter(item => {
+                    if (item.exploreType === 'rss') {
+                        return searchTerm === '' || 
+                               item.title.toLowerCase().includes(searchTerm) ||
+                               item.source.toLowerCase().includes(searchTerm) ||
+                               item.content.toLowerCase().includes(searchTerm);
+                    } else {
+                        return searchTerm === '' || 
+                               item.name.toLowerCase().includes(searchTerm) ||
+                               item.description.toLowerCase().includes(searchTerm) ||
+                               item.category.toLowerCase().includes(searchTerm);
+                    }
+                });
+                
+                if (filtered.length === 0) {
+                    return '<div class="loading">No results found</div>';
+                }
+                
+                return filtered.map(item => {
+                    if (item.exploreType === 'rss') {
+                        // Render RSS article as explore card
+                        return `
+                            <div class="explore-card" onclick="window.open('${item.sourceUrl}','_blank')">
+                                <div class="explore-card-header">
+                                    <div class="explore-icon"><i class="ph ph-newspaper"></i></div>
+                                    <div class="explore-name">${item.title.substring(0, 40)}${item.title.length > 40 ? '...' : ''}</div>
+                                </div>
+                                <span class="explore-category">📰 News • ${item.source}</span>
+                                <div class="explore-description">${item.content.substring(0, 100)}${item.content.length > 100 ? '...' : ''}</div>
+                                <div class="explore-url">
+                                    <i class="ph ph-link"></i>
+                                    ${item.sourceUrl ? item.sourceUrl.replace('https://', '').substring(0, 30) + '...' : 'Read more'}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Render regular resource
+                        return `
+                            <div class="explore-card" onclick="window.open('${item.url}','_blank')">
+                                <div class="explore-card-header">
+                                    <div class="explore-icon"><i class="ph ${item.icon}"></i></div>
+                                    <div class="explore-name">${item.name}</div>
+                                </div>
+                                <span class="explore-category">${item.category}</span>
+                                <div class="explore-description">${item.description}</div>
+                                <div class="explore-url">
+                                    <i class="ph ph-link"></i>
+                                    ${item.url.replace('https://', '').replace('http://', '')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            } 
+            else if (category === 'news') {
+                // Show only RSS articles
+                const rssArticles = allRssPosts.filter(post => {
+                    return searchTerm === '' || 
+                           post.title.toLowerCase().includes(searchTerm) ||
+                           post.source.toLowerCase().includes(searchTerm) ||
+                           post.content.toLowerCase().includes(searchTerm);
+                });
+                
+                if (rssArticles.length === 0) {
+                    return '<div class="loading">No news articles found</div>';
+                }
+                
+                return rssArticles.slice(0, 20).map(post => `
+                    <div class="explore-card" onclick="window.open('${post.sourceUrl}','_blank')">
+                        <div class="explore-card-header">
+                            <div class="explore-icon"><i class="ph ph-newspaper"></i></div>
+                            <div class="explore-name">${post.title.substring(0, 40)}${post.title.length > 40 ? '...' : ''}</div>
+                        </div>
+                        <span class="explore-category">📰 ${post.source} ${post.region === 'nigeria' ? '🇳🇬' : ''}</span>
+                        <div class="explore-description">${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}</div>
+                        <div class="explore-url">
+                            <i class="ph ph-link"></i>
+                            ${post.sourceUrl ? post.sourceUrl.replace('https://', '').substring(0, 30) + '...' : 'Read more'}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            else {
+                // Show Data, Education, or Video resources
+                const filtered = exploreResources.filter(r => 
+                    r.category === category && 
+                    (searchTerm === '' || 
+                     r.name.toLowerCase().includes(searchTerm) || 
+                     r.description.toLowerCase().includes(searchTerm))
+                );
+                
+                if (filtered.length === 0) {
+                    return '<div class="loading">No resources found</div>';
+                }
+                
+                return filtered.map(r => `
+                    <div class="explore-card" onclick="window.open('${r.url}','_blank')">
+                        <div class="explore-card-header">
+                            <div class="explore-icon"><i class="ph ${r.icon}"></i></div>
+                            <div class="explore-name">${r.name}</div>
+                        </div>
+                        <span class="explore-category">${r.category}</span>
+                        <div class="explore-description">${r.description}</div>
+                        <div class="explore-url">
+                            <i class="ph ph-link"></i>
+                            ${r.url.replace('https://', '').replace('http://', '')}
+                        </div>
+                    </div>
+                `).join('');
+            }
         }
 
-        function renderExploreResources(resources) {
-            if (resources.length === 0) {
-                return '<div class="loading">No resources found</div>';
-            }
-            
-            return resources.map(r => `
-                <div class="explore-card" onclick="window.open('${r.url}','_blank')">
-                    <div class="explore-card-header">
-                        <div class="explore-icon"><i class="ph ${r.icon}"></i></div>
-                        <div class="explore-name">${r.name}</div>
-                    </div>
-                    <span class="explore-category">${r.category}</span>
-                    <div class="explore-description">${r.description}</div>
-                    <div class="explore-url">
-                        <i class="ph ph-link"></i>
-                        ${r.url.replace('https://', '').replace('http://', '')}
-                    </div>
-                </div>
-            `).join('');
+        function filterExploreContent(searchTerm = '', category = 'all') {
+            document.getElementById('exploreGrid').innerHTML = renderExploreContent(category, searchTerm.toLowerCase());
         }
 
         // ============================================
@@ -2527,7 +2863,6 @@
 
         async function fetchMarkets() {
             try {
-                // Markets are already cached by the browser
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=true');
                 const coins = await response.json();
                 document.getElementById('marketUpdateTime').textContent = `Updated ${new Date().toLocaleTimeString()}`;
@@ -2598,7 +2933,7 @@
             
             document.getElementById('appStoreBtn')?.addEventListener('click', () => showPopup('Coming Soon', 'iOS app in development'));
             document.getElementById('playStoreBtn')?.addEventListener('click', () => showPopup('Coming Soon', 'Android app in development'));
-            document.getElementById('aboutLink')?.addEventListener('click', () => showPopup('About', 'Your trusted crypto news platform'));
+            document.getElementById('aboutLink')?.addEventListener('click', () => showPopup('About', 'Your trusted crypto and finance news platform'));
             document.getElementById('privacyLink')?.addEventListener('click', () => showPopup('Privacy', 'Coming soon'));
             document.getElementById('termsLink')?.addEventListener('click', () => showPopup('Terms', 'Coming soon'));
             document.getElementById('contactLink')?.addEventListener('click', () => showPopup('Contact', 'Email: hello@lyteit.com'));
@@ -2612,6 +2947,7 @@
             });
         }
 
+        // Initial load
         renderTrending();
         setupEventListeners();
         navigateTo('home');

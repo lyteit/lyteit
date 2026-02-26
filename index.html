@@ -7,8 +7,6 @@
     <!-- Favicon (fixes the 404 error) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <!-- Google Identity Services (for Sign-In) -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Chart.js for simple charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
@@ -116,98 +114,25 @@
             color: #fab005;
         }
 
-        .user-profile {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 30px;
+        .profile-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             background: #1c1f24;
             border: 1px solid #333;
-            transition: all 0.2s ease;
-        }
-        .user-profile:hover {
-            border-color: #fab005;
-            background: #2a2f38;
-        }
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #fab005;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            font-weight: 600;
-            object-fit: cover;
-        }
-        .user-name {
-            font-size: 0.8rem;
-            color: #fff;
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .user-dropdown {
-            position: absolute;
-            top: 45px;
-            right: 0;
-            background: #1c1f24;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 10px 0;
-            min-width: 150px;
-            display: none;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .user-profile:hover .user-dropdown {
-            display: block;
-        }
-        .dropdown-item {
-            padding: 10px 20px;
-            color: #fff;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: background 0.2s ease;
+            color: #8a8d91;
+            font-size: 1.3rem;
             cursor: pointer;
-        }
-        .dropdown-item:hover {
-            background: #2a2f38;
-            color: #fab005;
-        }
-        .dropdown-item i {
-            font-size: 1rem;
-            color: #fab005;
-        }
-        .dropdown-divider {
-            height: 1px;
-            background: #333;
-            margin: 8px 0;
+            transition: all 0.2s ease;
         }
 
-        .sign-in-btn {
-            background: #fab005;
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: opacity 0.2s ease;
-        }
-        .sign-in-btn:hover {
-            opacity: 0.9;
+        .profile-icon:hover {
+            border-color: #fab005;
+            color: #fab005;
+            background: #2a2f38;
         }
 
         .search-container {
@@ -851,19 +776,6 @@
         .newsletter-button:hover {
             opacity: 0.9;
         }
-        .newsletter-status {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            display: none;
-        }
-        .newsletter-status.success {
-            display: block;
-            background: #00c85320;
-            color: #00c853;
-            border: 1px solid #00c853;
-        }
 
         .app-promo {
             text-align: center;
@@ -971,6 +883,15 @@
             font-size: 2.5rem;
             color: #fab005;
             margin-bottom: 15px;
+        }
+        .popup-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .popup-message {
+            color: #8a8d91;
+            margin-bottom: 20px;
         }
         .popup-button {
             background: #fab005;
@@ -1121,7 +1042,7 @@
             <div class="popup-content">
                 <div class="popup-icon"><i class="ph ph-rocket"></i></div>
                 <div class="popup-title" id="popupTitle">Coming Soon!</div>
-                <div class="popup-message" id="popupMessage">We're working on it. Stay tuned!</div>
+                <div class="popup-message" id="popupMessage">This feature is still in development</div>
                 <button class="popup-button" id="closePopup">Got it</button>
             </div>
         </div>
@@ -1140,7 +1061,9 @@
                 </div>
 
                 <div class="header-right">
-                    <div id="userProfileContainer"></div>
+                    <div class="profile-icon" onclick="showPopup('Profile', 'Profile features coming soon!')">
+                        <i class="ph ph-user"></i>
+                    </div>
                     <i class="ph ph-bell bell-icon"></i>
                 </div>
             </div>
@@ -1168,19 +1091,18 @@
                         </div>
                         <div class="newsletter-form">
                             <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="your@email.com">
-                            <button class="newsletter-button" id="subscribeBtn">Subscribe</button>
+                            <button class="newsletter-button" id="subscribeBtn" onclick="showPopup('Newsletter', 'Newsletter subscription coming soon!')">Subscribe</button>
                         </div>
-                        <div class="newsletter-status" id="newsletterStatus"></div>
                     </div>
 
                     <div class="app-promo">
                         <h3 style="margin-bottom: 10px;">Take Us Everywhere</h3>
                         <div class="app-buttons">
-                            <div class="app-button" id="appStoreBtn">
+                            <div class="app-button" id="appStoreBtn" onclick="showPopup('App Store', 'iOS app coming soon!')">
                                 <i class="ph-fill ph-apple-logo"></i>
                                 <span>App Store</span>
                             </div>
-                            <div class="app-button" id="playStoreBtn">
+                            <div class="app-button" id="playStoreBtn" onclick="showPopup('Google Play', 'Android app coming soon!')">
                                 <i class="ph-fill ph-google-play-logo"></i>
                                 <span>Google Play</span>
                             </div>
@@ -1194,10 +1116,10 @@
                 </div>
 
                 <div class="footer-links">
-                    <span class="footer-link" id="aboutLink">About</span>
-                    <span class="footer-link" id="privacyLink">Privacy</span>
-                    <span class="footer-link" id="termsLink">Terms</span>
-                    <span class="footer-link" id="contactLink">Contact</span>
+                    <span class="footer-link" id="aboutLink" onclick="showPopup('About', 'Your trusted crypto and finance news platform')">About</span>
+                    <span class="footer-link" id="privacyLink" onclick="showPopup('Privacy', 'Privacy policy coming soon!')">Privacy</span>
+                    <span class="footer-link" id="termsLink" onclick="showPopup('Terms', 'Terms of service coming soon!')">Terms</span>
+                    <span class="footer-link" id="contactLink" onclick="showPopup('Contact', 'Email: hello@lyteit.com')">Contact</span>
                 </div>
                 <div class="copyright">⚡ lyteit.com © 2026 · All rights reserved</div>
             </div>
@@ -1230,16 +1152,9 @@
 
     <script type="module">
         // ============================================
-        // FIREBASE AUTH (with CACHE ENABLED)
+        // FIREBASE (for Firestore only - NO AUTH)
         // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithPopup, 
-            GoogleAuthProvider, 
-            signOut,
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
         import { 
             getFirestore, 
             enableIndexedDbPersistence,
@@ -1259,10 +1174,8 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        
         const db = getFirestore(app);
+        
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code == 'failed-precondition') {
                 console.log('Persistence failed: Multiple tabs open');
@@ -1276,7 +1189,6 @@
         // ============================================
         // APP STATE
         // ============================================
-        let currentUser = null;
         let currentPage = 'home';
         let allPosts = [];
         let allRssPosts = [];
@@ -1498,8 +1410,8 @@
                         const data = await response.json();
                         
                         if (data.status === 'ok' && data.items) {
-                            // 🔥 HOME PAGE: 20 articles from each feed
-                            const articles = data.items.slice(0, 20).map(item => {
+                            // Keeping at 10 due to API limitations
+                            const articles = data.items.slice(0, 10).map(item => {
                                 let image = item.thumbnail || '';
                                 if (!image && item.description) {
                                     const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);
@@ -1598,90 +1510,6 @@
             });
             
             return merged;
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            currentUser = user;
-            updateUserProfile();
-            updateNewsletterForUser();
-        });
-
-        function updateUserProfile() {
-            const container = document.getElementById('userProfileContainer');
-            if (!container) return;
-            if (currentUser) {
-                container.innerHTML = `
-                    <div class="user-profile">
-                        ${currentUser.photoURL ? `<img src="${currentUser.photoURL}" class="user-avatar">` : `<div class="user-avatar">${(currentUser.displayName || 'U').charAt(0)}</div>`}
-                        <span class="user-name">${(currentUser.displayName || 'User').split(' ')[0]}</span>
-                        <div class="user-dropdown">
-                            <div class="dropdown-item"><i class="ph ph-user-circle"></i> ${currentUser.displayName || 'User'}</div>
-                            <div class="dropdown-item"><i class="ph ph-envelope"></i> ${currentUser.email || ''}</div>
-                            <div class="dropdown-divider"></div>
-                            <div class="dropdown-item" onclick="handleSignOut()"><i class="ph ph-sign-out"></i> Sign Out</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `<button class="sign-in-btn" onclick="signInWithGoogle()"><i class="ph ph-google-logo"></i> Sign In</button>`;
-            }
-        }
-
-        window.signInWithGoogle = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                showPopup('Welcome!', 'Signed in successfully');
-            } catch (error) {
-                console.error('Sign-in error:', error);
-                showPopup('Error', 'Failed to sign in');
-            }
-        };
-
-        window.handleSignOut = async () => {
-            try {
-                await signOut(auth);
-                showPopup('Signed Out', 'See you next time!');
-            } catch (error) {
-                console.error('Sign-out error:', error);
-                showPopup('Error', 'Failed to sign out');
-            }
-        };
-
-        function updateNewsletterForUser() {
-            const emailInput = document.getElementById('newsletterEmail');
-            const subscribeBtn = document.getElementById('subscribeBtn');
-            const statusDiv = document.getElementById('newsletterStatus');
-            
-            if (!emailInput || !subscribeBtn) return;
-            
-            if (currentUser) {
-                emailInput.value = currentUser.email || '';
-                emailInput.disabled = true;
-                subscribeBtn.textContent = 'Subscribed ✓';
-                subscribeBtn.disabled = true;
-                statusDiv.className = 'newsletter-status success';
-                statusDiv.textContent = `You're subscribed with ${currentUser.email}`;
-            } else {
-                emailInput.value = '';
-                emailInput.disabled = false;
-                emailInput.placeholder = 'Enter your email';
-                subscribeBtn.textContent = 'Subscribe';
-                subscribeBtn.disabled = false;
-                statusDiv.className = 'newsletter-status';
-                statusDiv.textContent = '';
-            }
-        }
-
-        function handleNewsletterSubscribe() {
-            if (!currentUser) {
-                signInWithGoogle();
-                return;
-            }
-            
-            const statusDiv = document.getElementById('newsletterStatus');
-            statusDiv.className = 'newsletter-status success';
-            statusDiv.textContent = `Thanks! You're subscribed with ${currentUser.email}`;
-            console.log('Newsletter subscribed:', currentUser.email);
         }
 
         window.navigateTo = function(page) {
@@ -2074,8 +1902,7 @@
 
         function renderExploreContent(category, searchTerm = '') {
             if (category === 'all') {
-                // 🔥 EXPLORE PAGE: Show 20 RSS articles
-                const rssArticles = allRssPosts.slice(0, 20).map(post => ({
+                const rssArticles = allRssPosts.slice(0, 10).map(post => ({
                     ...post,
                     exploreType: 'rss'
                 }));
@@ -2351,7 +2178,7 @@
             }
         }
 
-        function showPopup(title, message) {
+        window.showPopup = function(title, message) {
             document.getElementById('popupTitle').textContent = title;
             document.getElementById('popupMessage').textContent = message;
             document.getElementById('popup').classList.add('show');
@@ -2365,14 +2192,6 @@
                 document.getElementById('scrollableContent').scrollTo({ top: 0, behavior: 'smooth' });
             });
             
-            document.getElementById('subscribeBtn')?.addEventListener('click', handleNewsletterSubscribe);
-            
-            document.getElementById('appStoreBtn')?.addEventListener('click', () => showPopup('Coming Soon', 'iOS app in development'));
-            document.getElementById('playStoreBtn')?.addEventListener('click', () => showPopup('Coming Soon', 'Android app in development'));
-            document.getElementById('aboutLink')?.addEventListener('click', () => showPopup('About', 'Your trusted crypto and finance news platform'));
-            document.getElementById('privacyLink')?.addEventListener('click', () => showPopup('Privacy', 'Coming soon'));
-            document.getElementById('termsLink')?.addEventListener('click', () => showPopup('Terms', 'Coming soon'));
-            document.getElementById('contactLink')?.addEventListener('click', () => showPopup('Contact', 'Email: hello@lyteit.com'));
             document.getElementById('closePopup')?.addEventListener('click', () => {
                 document.getElementById('popup').classList.remove('show');
             });

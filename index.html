@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lyteit.com - Financial & Crypto News</title>
-    <!-- Favicon (fixes the 404 error) -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Chart.js for simple charts -->
@@ -250,6 +250,240 @@
         }
         .clear-search:hover {
             text-decoration: underline;
+        }
+
+        /* Ad Styles */
+        .ad-badge {
+            background: #fab00520;
+            color: #fab005;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+        
+        .ad-badge i {
+            font-size: 0.7rem;
+        }
+        
+        .sponsored-tag {
+            font-size: 0.65rem;
+            color: #8a8d91;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+        }
+        
+        .sponsored-tag i {
+            color: #fab005;
+            font-size: 0.7rem;
+        }
+        
+        /* Native Ad Card */
+        .news-item.ad-item {
+            border-left: 2px solid #fab005;
+            background: rgba(250, 176, 5, 0.02);
+        }
+        
+        .news-item.ad-item:hover {
+            background: rgba(250, 176, 5, 0.05);
+        }
+        
+        .video-card.ad-card {
+            border-left: 2px solid #fab005;
+        }
+        
+        .ad-button {
+            display: inline-block;
+            background: #fab005;
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 8px;
+            transition: opacity 0.2s ease;
+        }
+        
+        .ad-button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Popup Ad */
+        .popup-ad-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-ad-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .popup-ad-container {
+            background: #15171a;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #fab005;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        .popup-ad-overlay.show .popup-ad-container {
+            transform: scale(1);
+        }
+        
+        .popup-ad-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1c1f24;
+            border: 1px solid #333;
+            color: #8a8d91;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .popup-ad-close.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .popup-ad-close:hover {
+            border-color: #fab005;
+            color: #fab005;
+        }
+        
+        .popup-ad-countdown {
+            text-align: center;
+            margin: 15px 0;
+            color: #8a8d91;
+            font-size: 0.8rem;
+        }
+        
+        .popup-ad-countdown span {
+            color: #fab005;
+            font-weight: 600;
+        }
+        
+        .popup-ad-badge {
+            background: #fab00520;
+            color: #fab005;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .popup-ad-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .popup-ad-description {
+            color: #8a8d91;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .popup-ad-image {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .popup-ad-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .popup-ad-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        
+        .popup-ad-button {
+            background: #fab005;
+            color: #000;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: opacity 0.2s ease;
+        }
+        
+        .popup-ad-button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Direct Link Ad */
+        .direct-ad-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: #15171a;
+            border: 1px solid #fab005;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .direct-ad-link {
+            color: #fab005;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #1e2128;
+            border-radius: 30px;
+            transition: all 0.2s ease;
+        }
+        
+        .direct-ad-link:hover {
+            background: #2a2f38;
+            transform: translateY(-2px);
         }
 
         .featured-card { 
@@ -1053,6 +1287,35 @@
             <i class="ph ph-database"></i> Cache enabled
         </div>
 
+        <!-- Popup Ad Container -->
+        <div class="popup-ad-overlay" id="popupAdOverlay">
+            <div class="popup-ad-container" id="popupAdContainer">
+                <div class="popup-ad-close" id="popupAdClose">
+                    <i class="ph ph-x"></i>
+                </div>
+                <div class="popup-ad-badge" id="popupAdBadge">
+                    <i class="ph ph-megaphone"></i> Sponsored
+                </div>
+                <div id="popupAdContent"></div>
+                <div class="popup-ad-countdown" id="popupAdCountdown">
+                    Close available in <span id="countdownTimer">5</span> seconds
+                </div>
+            </div>
+        </div>
+
+        <!-- Direct Link Ad Modal -->
+        <div class="popup-overlay" id="directLinkModal">
+            <div class="popup-content">
+                <div class="popup-icon"><i class="ph ph-link"></i></div>
+                <div class="popup-title">Leaving lyteit.com</div>
+                <div class="popup-message" id="directLinkMessage">You are being redirected to an external site.</div>
+                <div class="popup-actions" style="flex-direction: column; gap: 10px;">
+                    <button class="popup-button" id="confirmRedirect" style="background: #fab005;">Continue</button>
+                    <button class="popup-btn cancel" id="cancelRedirect">Stay Here</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Success/Info Popup -->
         <div class="popup-overlay" id="popup">
             <div class="popup-content">
@@ -1077,11 +1340,11 @@
                 </div>
 
                 <div class="header-right">
-                    <!-- YouTube Icon - Social Media Link (will add URLs later) -->
+                    <!-- YouTube Icon - Social Media Link -->
                     <a href="#" class="social-icon youtube" id="youtubeLink" onclick="showPopup('YouTube', 'YouTube channel coming soon!')">
                         <i class="ph-fill ph-youtube-logo"></i>
                     </a>
-                    <!-- X (Twitter) Icon - Social Media Link (will add URLs later) -->
+                    <!-- X (Twitter) Icon - Social Media Link -->
                     <a href="#" class="social-icon x" id="xLink" onclick="showPopup('X', 'X profile coming soon!')">
                         <i class="ph-fill ph-x-logo"></i>
                     </a>
@@ -1172,7 +1435,7 @@
 
     <script type="module">
         // ============================================
-        // FIREBASE (for Firestore only - NO AUTH)
+        // FIREBASE (with Ads Collection)
         // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
         import { 
@@ -1181,7 +1444,10 @@
             collection,
             getDocs,
             query,
-            orderBy
+            orderBy,
+            doc,
+            updateDoc,
+            increment
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -1212,9 +1478,10 @@
         let currentPage = 'home';
         let allPosts = [];
         let allRssPosts = [];
+        let allAds = [];
         let searchTerm = '';
         
-        let displayedPosts = [];
+        let displayedItems = []; // Mix of posts and native ads
         let currentDisplayCount = 0;
         const POSTS_PER_BATCH = 3;
         let featuredPost = null;
@@ -1224,9 +1491,20 @@
         const expandedPosts = new Map();
 
         let exploreCategory = 'all';
+        let currentPopupAd = null;
+        let popupCountdown = null;
+        let redirectUrl = null;
 
         const postCache = new Map();
         const CACHE_DURATION = 5 * 60 * 1000;
+
+        // Visit tracking for popup ads (1st and 5th visit)
+        const VISIT_KEY = 'lyteit_visits';
+        let visitCount = parseInt(localStorage.getItem(VISIT_KEY) || '0');
+        
+        // Increment visit count on page load
+        visitCount++;
+        localStorage.setItem(VISIT_KEY, visitCount);
 
         const RSS_FEEDS = [
             {
@@ -1325,6 +1603,214 @@
             x: '#'
         };
 
+        // ============================================
+        // AD FUNCTIONS
+        // ============================================
+        async function loadAds() {
+            try {
+                const q = query(collection(db, 'ads'), orderBy('createdAt', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                const ads = [];
+                snapshot.forEach(doc => {
+                    ads.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Filter active ads that haven't expired
+                const now = new Date();
+                allAds = ads.filter(ad => {
+                    if (!ad.active) return false;
+                    
+                    const expiryDate = ad.expiryDate ? new Date(ad.expiryDate) : null;
+                    if (expiryDate && expiryDate < now) return false;
+                    
+                    const startDate = ad.startDate ? new Date(ad.startDate) : null;
+                    if (startDate && startDate > now) return false;
+                    
+                    // Check impression limits
+                    if (ad.maxImpressions > 0 && (ad.impressions || 0) >= ad.maxImpressions) return false;
+                    
+                    // Check click limits
+                    if (ad.maxClicks > 0 && (ad.clicks || 0) >= ad.maxClicks) return false;
+                    
+                    return true;
+                });
+                
+                console.log(`Loaded ${allAds.length} active ads`);
+                
+                // Check if we should show a popup ad (1st or 5th visit)
+                if (visitCount === 1 || visitCount === 5) {
+                    showRandomPopupAd();
+                }
+                
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+
+        function showRandomPopupAd() {
+            const popupAds = allAds.filter(ad => ad.type === 'popup');
+            if (popupAds.length === 0) return;
+            
+            // Pick random popup ad
+            const randomIndex = Math.floor(Math.random() * popupAds.length);
+            const ad = popupAds[randomIndex];
+            
+            showPopupAd(ad);
+        }
+
+        function showPopupAd(ad) {
+            currentPopupAd = ad;
+            const overlay = document.getElementById('popupAdOverlay');
+            const content = document.getElementById('popupAdContent');
+            const closeBtn = document.getElementById('popupAdClose');
+            const countdownEl = document.getElementById('popupAdCountdown');
+            const timerEl = document.getElementById('countdownTimer');
+            
+            // Track impression
+            trackAdImpression(ad.id);
+            
+            // Generate content based on popup type
+            let html = '';
+            
+            if (ad.popupType === 'text') {
+                html = `
+                    <div class="popup-ad-title">${ad.title}</div>
+                    <div class="popup-ad-description">${ad.description}</div>
+                `;
+            } else if (ad.popupType === 'image') {
+                html = `
+                    <div class="popup-ad-title">${ad.title}</div>
+                    <img src="${ad.image}" class="popup-ad-image" alt="${ad.title}">
+                    <div class="popup-ad-description">${ad.description}</div>
+                `;
+            } else if (ad.popupType === 'video') {
+                html = `
+                    <div class="popup-ad-title">${ad.title}</div>
+                    <div class="popup-ad-video">
+                        <iframe src="https://www.youtube.com/embed/${ad.videoId}?autoplay=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="popup-ad-description">${ad.description}</div>
+                `;
+            }
+            
+            html += `
+                <a href="${ad.buttonLink}" class="popup-ad-button" target="_blank" onclick="trackAdClick('${ad.id}', event)">
+                    ${ad.buttonText} <i class="ph ph-arrow-right"></i>
+                </a>
+            `;
+            
+            content.innerHTML = html;
+            
+            // Show overlay
+            overlay.classList.add('show');
+            
+            // Start countdown
+            closeBtn.classList.remove('show');
+            countdownEl.style.display = 'block';
+            let seconds = 5;
+            timerEl.textContent = seconds;
+            
+            if (popupCountdown) clearInterval(popupCountdown);
+            
+            popupCountdown = setInterval(() => {
+                seconds--;
+                timerEl.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(popupCountdown);
+                    closeBtn.classList.add('show');
+                    countdownEl.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        window.trackAdClick = async function(adId, event) {
+            try {
+                const adRef = doc(db, 'ads', adId);
+                await updateDoc(adRef, {
+                    clicks: increment(1)
+                });
+                console.log('Ad click tracked:', adId);
+            } catch (error) {
+                console.error('Error tracking ad click:', error);
+            }
+        };
+
+        async function trackAdImpression(adId) {
+            try {
+                const adRef = doc(db, 'ads', adId);
+                await updateDoc(adRef, {
+                    impressions: increment(1)
+                });
+                console.log('Ad impression tracked:', adId);
+            } catch (error) {
+                console.error('Error tracking ad impression:', error);
+            }
+        }
+
+        function getNativeAds(count = 1) {
+            const nativeAds = allAds.filter(ad => ad.type === 'native');
+            if (nativeAds.length === 0) return [];
+            
+            // Random selection
+            const shuffled = [...nativeAds].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        function renderNativeAd(ad) {
+            return `
+                <div class="news-item ad-item" id="ad-${ad.id}" onclick="handleAdClick('${ad.id}', '${ad.buttonLink}', event)">
+                    <div class="ad-badge">
+                        <i class="ph ph-megaphone"></i> Sponsored
+                    </div>
+                    ${ad.image ? `<img src="${ad.image}" class="news-item-img" onerror="this.src='https://images.unsplash.com/photo-1621761126064-fdd80772bc22'">` : ''}
+                    <div class="news-item-content">
+                        <div class="news-item-title">${ad.title}</div>
+                        <div class="rss-source-badge" style="background: #fab00520;">
+                            <i class="ph ph-briefcase"></i> ${ad.sponsor}
+                        </div>
+                        <div class="post-content-container">
+                            <p>${ad.text}</p>
+                        </div>
+                        <a href="${ad.buttonLink}" class="ad-button" target="_blank" onclick="trackAdClick('${ad.id}', event)">
+                            ${ad.buttonText} <i class="ph ph-arrow-right"></i>
+                        </a>
+                        <div class="sponsored-tag">
+                            <i class="ph ph-megaphone"></i> Sponsored Content
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleAdClick = function(adId, url, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (url) {
+                trackAdClick(adId, event);
+                window.open(url, '_blank');
+            }
+        };
+
+        // Close popup ad
+        document.getElementById('popupAdClose').addEventListener('click', () => {
+            document.getElementById('popupAdOverlay').classList.remove('show');
+            if (popupCountdown) clearInterval(popupCountdown);
+        });
+
+        // Close on overlay click
+        document.getElementById('popupAdOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('popupAdOverlay')) {
+                document.getElementById('popupAdOverlay').classList.remove('show');
+                if (popupCountdown) clearInterval(popupCountdown);
+            }
+        });
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
         function getYouTubeVideoId(url) {
             if (!url) return null;
             const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&\n?#]+)/);
@@ -1436,7 +1922,6 @@
                         const data = await response.json();
                         
                         if (data.status === 'ok' && data.items) {
-                            // Keeping at 10 due to API limitations
                             const articles = data.items.slice(0, 10).map(item => {
                                 let image = item.thumbnail || '';
                                 if (!image && item.description) {
@@ -1593,6 +2078,8 @@
         async function loadHomePage() {
             document.getElementById('mainContent').innerHTML = getHomePageHTML();
             try {
+                await loadAds(); // Load ads first
+                
                 allPosts = await getAllPosts(true);
                 
                 if (allPosts.length === 0) {
@@ -1603,7 +2090,24 @@
                 
                 const featured = allPosts.filter(p => p.featured === true);
                 featuredPost = featured.length ? featured[Math.floor(Math.random() * featured.length)] : allPosts[0];
-                displayedPosts = allPosts.filter(p => p.id !== featuredPost.id);
+                
+                // Filter out featured post from main list
+                const regularPosts = allPosts.filter(p => p.id !== featuredPost.id);
+                
+                // Mix in native ads every 3 posts
+                displayedItems = [];
+                for (let i = 0; i < regularPosts.length; i++) {
+                    displayedItems.push(regularPosts[i]);
+                    
+                    // Insert an ad after every 3 posts
+                    if ((i + 1) % 3 === 0) {
+                        const nativeAds = getNativeAds(1);
+                        if (nativeAds.length > 0) {
+                            displayedItems.push({ ...nativeAds[0], isAd: true });
+                        }
+                    }
+                }
+                
                 currentDisplayCount = 0;
                 renderFeaturedPost(featuredPost);
                 await loadMorePosts(true);
@@ -1620,26 +2124,37 @@
             const list = document.getElementById('newsList');
             if (!list) return;
             if (btn) { btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Loading...'; btn.disabled = true; }
+            
             try {
                 const start = reset ? 0 : currentDisplayCount;
                 const end = start + POSTS_PER_BATCH;
-                const posts = displayedPosts.slice(start, end);
-                if (posts.length === 0) { 
+                const items = displayedItems.slice(start, end);
+                
+                if (items.length === 0) { 
                     if (reset && list.innerHTML === '') {
                         list.innerHTML = '<div class="loading">No more posts</div>';
                     }
                     document.getElementById('loadMoreContainer').style.display = 'none'; 
                     return; 
                 }
+                
                 currentDisplayCount = end;
                 let html = reset ? '' : list.innerHTML;
-                for (const p of posts) {
-                    html += p.type === 'video' ? renderVideoPost(p) : renderArticlePost(p);
+                
+                for (const item of items) {
+                    if (item.isAd) {
+                        html += renderNativeAd(item);
+                    } else if (item.type === 'video') {
+                        html += renderVideoPost(item);
+                    } else {
+                        html += renderArticlePost(item);
+                    }
                 }
+                
                 list.innerHTML = html;
                 
                 if (btn) {
-                    if (currentDisplayCount >= displayedPosts.length) {
+                    if (currentDisplayCount >= displayedItems.length) {
                         btn.innerHTML = '<i class="ph ph-check-circle"></i> All Posts Loaded';
                         btn.disabled = true;
                     } else {
@@ -1848,26 +2363,49 @@
                 await loadHomePage();
                 return;
             }
+            
             isSearching = true;
             const lower = term.toLowerCase();
-            const filtered = allPosts.filter(p => {
+            
+            // Search in posts
+            const filteredPosts = allPosts.filter(p => {
                 if (p.type === 'video') {
                     return p.title.toLowerCase().includes(lower) || (p.description || '').toLowerCase().includes(lower);
                 }
                 return p.title.toLowerCase().includes(lower) || (p.content || '').toLowerCase().includes(lower) || 
                        (p.source && p.source.toLowerCase().includes(lower));
             });
+            
+            // Search in ads (but don't show in search results)
+            // Only show native ads that match search
+            const filteredAds = allAds.filter(ad => 
+                ad.type === 'native' && 
+                (ad.title.toLowerCase().includes(lower) || ad.text.toLowerCase().includes(lower))
+            );
+            
+            const filtered = [...filteredPosts, ...filteredAds.map(ad => ({ ...ad, isAd: true }))];
+            
             document.getElementById('featuredSection').style.display = 'none';
             document.getElementById('loadMoreContainer').style.display = 'none';
             const header = document.getElementById('searchResultsHeader');
             header.style.display = 'block';
             header.innerHTML = `Found ${filtered.length} result${filtered.length > 1 ? 's' : ''} for "${term}" <span class="clear-search" onclick="clearSearch()">Clear search</span>`;
+            
             const list = document.getElementById('newsList');
             if (!filtered.length) {
                 list.innerHTML = '<div class="loading">No results found</div>';
                 return;
             }
-            list.innerHTML = filtered.map(p => p.type === 'video' ? renderVideoPost(p) : renderArticlePost(p)).join('');
+            
+            list.innerHTML = filtered.map(item => {
+                if (item.isAd) {
+                    return renderNativeAd(item);
+                } else if (item.type === 'video') {
+                    return renderVideoPost(item);
+                } else {
+                    return renderArticlePost(item);
+                }
+            }).join('');
         }
 
         window.clearSearch = function() {
@@ -2226,8 +2764,23 @@
                     document.getElementById('popup').classList.remove('show');
                 }
             });
+
+            // Direct link modal handlers
+            document.getElementById('cancelRedirect')?.addEventListener('click', () => {
+                document.getElementById('directLinkModal').classList.remove('show');
+                redirectUrl = null;
+            });
+
+            document.getElementById('confirmRedirect')?.addEventListener('click', () => {
+                if (redirectUrl) {
+                    window.open(redirectUrl, '_blank');
+                    document.getElementById('directLinkModal').classList.remove('show');
+                    redirectUrl = null;
+                }
+            });
         }
 
+        // Initialize
         renderTrending();
         setupEventListeners();
         updateTopNavigation('home');

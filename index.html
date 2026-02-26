@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lyteit.com - Financial & Crypto News</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google reCAPTCHA for App Check -->
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=YOUR_SITE_KEY"></script>
     <!-- Google Identity Services (for Sign-In) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- Chart.js for simple charts -->
@@ -1381,6 +1383,10 @@
         // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
         import { 
+            initializeAppCheck, 
+            ReCaptchaV3Provider 
+        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app-check.js";
+        import { 
             getAuth, 
             signInWithPopup, 
             GoogleAuthProvider, 
@@ -1406,6 +1412,21 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        
+        // ============================================
+        // 🔥 APP CHECK - PROTECT YOUR FIREBASE PROJECT
+        // ============================================
+        // Enable debug mode for localhost only
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+        }
+        
+        // Initialize App Check with your reCAPTCHA v3 site key
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider('6Le3SXgsAAAAAMpFAEweVDa9Ta2XisswvSEpsmCI'), // 🔴 REPLACE WITH YOUR SITE KEY
+            isTokenAutoRefreshEnabled: true
+        });
+
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         
@@ -2598,6 +2619,17 @@
             document.getElementById('popupTitle').textContent = title;
             document.getElementById('popupMessage').textContent = message;
             document.getElementById('popup').classList.add('show');
+        }
+
+        function renderTrending() {
+            const el = document.getElementById('homeTrending');
+            if (el) {
+                el.innerHTML = trendingTopics.map(t => `
+                    <div class="trending-item" onclick="searchTrendingTopic('${t.topic}')">
+                        <i class="ph ${t.icon}"></i><span>${t.topic}</span>
+                    </div>
+                `).join('');
+            }
         }
 
         function setupEventListeners() {

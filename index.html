@@ -1498,7 +1498,8 @@
                         const data = await response.json();
                         
                         if (data.status === 'ok' && data.items) {
-                            const articles = data.items.slice(0, 10).map(item => {
+                            // 🔥 CHANGED FROM 10 TO 20 🔥
+                            const articles = data.items.slice(0, 20).map(item => {
                                 let image = item.thumbnail || '';
                                 if (!image && item.description) {
                                     const imgMatch = item.description.match(/<img[^>]+src="([^">]+)"/);

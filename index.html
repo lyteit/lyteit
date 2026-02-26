@@ -102,25 +102,6 @@
             animation: slideIn 0.2s ease;
         }
         
-        /* Alternative highlight styles - you can switch between these */
-        /* Option 2: Background highlight */
-        /*
-        .desktop-menu a.active {
-            background: #fab00520;
-            color: #fab005;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
-        */
-        
-        /* Option 3: Glow effect */
-        /*
-        .desktop-menu a.active {
-            color: #fab005;
-            text-shadow: 0 0 8px rgba(250, 176, 5, 0.5);
-        }
-        */
-        
         @keyframes slideIn {
             from {
                 width: 0;
@@ -2443,32 +2424,136 @@
         }
 
         // ============================================
-        // MARKETS PAGE
+        // MARKETS PAGE - WITH CACHING
         // ============================================
         function loadMarketsPage() {
             document.getElementById('mainContent').innerHTML = `
                 <div class="page-indicator"><i class="ph ph-chart-line-up"></i> Markets</div>
-                <div class="markets-header"><div class="markets-refresh"><i class="ph ph-clock"></i><span id="marketUpdateTime">Loading...</span></div></div>
-                <div class="markets-grid" id="marketsGrid"><div class="loading">Loading prices...</div></div>
+                <div class="markets-header">
+                    <div class="markets-refresh">
+                        <i class="ph ph-clock"></i>
+                        <span id="marketUpdateTime">Loading...</span>
+                    </div>
+                    <div class="markets-refresh">
+                        <i class="ph ph-database"></i>
+                        <span id="cacheStatus"></span>
+                    </div>
+                </div>
+                <div class="markets-grid" id="marketsGrid">
+                    <div class="loading">Loading prices...</div>
+                </div>
             `;
-            fetchMarkets();
+            
+            // Try to load from cache first
+            loadMarketsWithCache();
         }
 
-        async function fetchMarkets() {
+        async function loadMarketsWithCache() {
+            const cacheKey = 'marketData';
+            const cacheTimeKey = 'marketDataTime';
+            const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes (same as your refresh)
+            
+            // Check cache
+            const cachedData = localStorage.getItem(cacheKey);
+            const cachedTime = localStorage.getItem(cacheTimeKey);
+            const cacheStatus = document.getElementById('cacheStatus');
+            const updateTime = document.getElementById('marketUpdateTime');
+            
+            // If we have valid cache, show it immediately
+            if (cachedData && cachedTime) {
+                const age = Date.now() - parseInt(cachedTime);
+                if (age < CACHE_DURATION) {
+                    // Cache is still fresh
+                    const coins = JSON.parse(cachedData);
+                    renderMarkets(coins);
+                    if (updateTime) {
+                        const date = new Date(parseInt(cachedTime));
+                        updateTime.textContent = `Cached: ${date.toLocaleTimeString()}`;
+                    }
+                    if (cacheStatus) {
+                        const minsAgo = Math.floor(age / 60000);
+                        cacheStatus.textContent = `📦 Cache: ${minsAgo}m old`;
+                    }
+                    
+                    // Still fetch fresh data in background
+                    setTimeout(() => fetchMarkets(true), 100);
+                    return;
+                } else {
+                    if (cacheStatus) {
+                        cacheStatus.textContent = `📦 Cache expired, fetching fresh...`;
+                    }
+                }
+            }
+            
+            // No cache or expired, fetch fresh
+            await fetchMarkets(false);
+        }
+
+        async function fetchMarkets(background = false) {
             try {
+                if (!background) {
+                    document.getElementById('marketsGrid').innerHTML = '<div class="loading">Loading fresh prices...</div>';
+                }
+                
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=true');
                 const coins = await response.json();
-                document.getElementById('marketUpdateTime').textContent = `Updated ${new Date().toLocaleTimeString()}`;
-                document.getElementById('marketsGrid').innerHTML = coins.map(c => `
-                    <div class="coin-card">
-                        <div class="coin-header"><span class="coin-rank">#${c.market_cap_rank}</span><span class="coin-name">${c.name}</span><span class="coin-symbol">${c.symbol.toUpperCase()}</span></div>
-                        <div class="coin-price">$${c.current_price.toLocaleString()}</div>
-                        <div class="coin-change ${c.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">${c.price_change_percentage_24h >= 0 ? '+' : ''}${c.price_change_percentage_24h?.toFixed(2)}%</div>
-                        <div class="coin-chart"><canvas id="chart-${c.id}" width="100%" height="60"></canvas></div>
+                
+                // Save to cache
+                localStorage.setItem('marketData', JSON.stringify(coins));
+                localStorage.setItem('marketDataTime', Date.now().toString());
+                
+                // Update UI
+                renderMarkets(coins);
+                
+                const updateTime = document.getElementById('marketUpdateTime');
+                if (updateTime) {
+                    updateTime.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+                }
+                
+                const cacheStatus = document.getElementById('cacheStatus');
+                if (cacheStatus) {
+                    cacheStatus.textContent = `📦 Cache: fresh`;
+                }
+                
+                // Schedule next refresh
+                setTimeout(fetchMarkets, 900000); // 15 minutes
+                
+            } catch (error) {
+                console.error('Error fetching markets:', error);
+                
+                // If fetch fails and we have cached data, show it even if expired
+                const cachedData = localStorage.getItem('marketData');
+                if (cachedData && !background) {
+                    const coins = JSON.parse(cachedData);
+                    renderMarkets(coins);
+                    document.getElementById('marketUpdateTime').textContent = 'Using cached data (offline)';
+                } else {
+                    document.getElementById('marketsGrid').innerHTML = '<div class="loading" style="color:#ff5252;">Error loading prices. Please refresh.</div>';
+                }
+            }
+        }
+
+        function renderMarkets(coins) {
+            document.getElementById('marketsGrid').innerHTML = coins.map(c => `
+                <div class="coin-card">
+                    <div class="coin-header">
+                        <span class="coin-rank">#${c.market_cap_rank}</span>
+                        <span class="coin-name">${c.name}</span>
+                        <span class="coin-symbol">${c.symbol.toUpperCase()}</span>
                     </div>
-                `).join('');
-                setTimeout(fetchMarkets, 900000);
-                if (window.Chart) {
+                    <div class="coin-price">$${c.current_price.toLocaleString()}</div>
+                    <div class="coin-change ${c.price_change_percentage_24h >= 0 ? 'positive' : 'negative'}">
+                        ${c.price_change_percentage_24h >= 0 ? '+' : ''}${c.price_change_percentage_24h?.toFixed(2)}%
+                    </div>
+                    <div class="coin-chart">
+                        <canvas id="chart-${c.id}" width="100%" height="60"></canvas>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Render charts
+            if (window.Chart) {
+                setTimeout(() => {
                     coins.forEach(c => {
                         const canvas = document.getElementById(`chart-${c.id}`);
                         if (canvas && c.sparkline_in_7d?.price) {
@@ -2481,21 +2566,31 @@
                                         borderColor: c.price_change_percentage_24h >= 0 ? '#00c853' : '#ff5252', 
                                         borderWidth: 2, 
                                         pointRadius: 0,
-                                        tension: 0.4
+                                        tension: 0.4,
+                                        fill: false
                                     }] 
                                 },
                                 options: { 
                                     responsive: true, 
                                     maintainAspectRatio: false, 
-                                    plugins: { legend: { display: false }, tooltip: { enabled: false } }, 
-                                    scales: { x: { display: false }, y: { display: false } } 
+                                    plugins: { 
+                                        legend: { display: false }, 
+                                        tooltip: { enabled: false } 
+                                    }, 
+                                    scales: { 
+                                        x: { display: false }, 
+                                        y: { display: false } 
+                                    },
+                                    elements: {
+                                        line: {
+                                            borderWidth: 2
+                                        }
+                                    }
                                 }
                             });
                         }
                     });
-                }
-            } catch (error) {
-                console.error('Error fetching markets:', error);
+                }, 100);
             }
         }
 

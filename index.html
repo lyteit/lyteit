@@ -114,7 +114,7 @@
             color: #fab005;
         }
 
-        .profile-icon {
+        .social-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -127,137 +127,23 @@
             font-size: 1.3rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            position: relative;
+            text-decoration: none;
         }
 
-        .profile-icon:hover {
+        .social-icon:hover {
             border-color: #fab005;
             color: #fab005;
             background: #2a2f38;
         }
 
-        .profile-icon.logged-in {
-            border-color: #fab005;
-            background: #2a2f38;
+        .social-icon.youtube:hover {
+            border-color: #ff0000;
+            color: #ff0000;
         }
 
-        .profile-dropdown {
-            position: absolute;
-            top: 50px;
-            right: 0;
-            width: 280px;
-            background: #15171a;
-            border: 1px solid #333;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: none;
-            z-index: 1000;
-        }
-
-        .profile-dropdown.show {
-            display: block;
-        }
-
-        .profile-header {
-            padding: 20px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .profile-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #fab005;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-username {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .profile-email {
-            font-size: 0.7rem;
-            color: #8a8d91;
-        }
-
-        .profile-badge {
-            display: inline-block;
-            background: #fab00520;
-            color: #fab005;
-            font-size: 0.6rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-top: 4px;
-        }
-
-        .profile-menu-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #8a8d91;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #222;
-        }
-
-        .profile-menu-item:hover {
-            background: #1e2128;
-            color: #fab005;
-        }
-
-        .profile-menu-item.logout {
-            color: #ff5252;
-        }
-
-        .profile-menu-item.logout:hover {
-            background: #ff525220;
-        }
-
-        .profile-footer {
-            padding: 15px 20px;
-            font-size: 0.7rem;
-            color: #8a8d91;
-            text-align: center;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .auth-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .auth-btn.signup {
-            background: #fab005;
-            color: #000;
-        }
-
-        .auth-btn.login {
-            background: transparent;
-            border: 1px solid #fab005;
-            color: #fab005;
-        }
-
-        .auth-btn:hover {
-            opacity: 0.9;
+        .social-icon.x:hover {
+            border-color: #ffffff;
+            color: #ffffff;
         }
 
         .search-container {
@@ -347,224 +233,6 @@
             gap: 5px;
             border-bottom: 1px solid #333;
             margin-bottom: 15px;
-        }
-
-        .auth-popup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .auth-popup.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .auth-container {
-            background: #15171a;
-            border-radius: 24px;
-            padding: 30px;
-            max-width: 450px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid #333;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .auth-popup.show .auth-container {
-            transform: scale(1);
-        }
-
-        .auth-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 15px;
-        }
-
-        .auth-tab {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #8a8d91;
-            font-size: 1rem;
-            font-weight: 600;
-            padding: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-radius: 8px;
-        }
-
-        .auth-tab.active {
-            background: #fab00520;
-            color: #fab005;
-        }
-
-        .auth-form {
-            display: block;
-        }
-
-        .auth-form.hidden {
-            display: none;
-        }
-
-        .avatar-selection {
-            margin-bottom: 20px;
-        }
-
-        .avatar-label {
-            color: #8a8d91;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .avatar-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .avatar-option {
-            aspect-ratio: 1;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.2s ease;
-        }
-
-        .avatar-option:hover {
-            transform: scale(1.05);
-        }
-
-        .avatar-option.selected {
-            border-color: #fab005;
-            box-shadow: 0 0 0 2px rgba(250, 176, 5, 0.3);
-        }
-
-        .avatar-option img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            color: #8a8d91;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .form-input {
-            width: 100%;
-            background: #1c1f24;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 12px 15px;
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .form-input:focus {
-            border-color: #fab005;
-            box-shadow: 0 0 0 2px rgba(250, 176, 5, 0.2);
-        }
-
-        .form-input.error {
-            border-color: #ff5252;
-        }
-
-        .error-message {
-            color: #ff5252;
-            font-size: 0.7rem;
-            margin-top: 5px;
-        }
-
-        .password-hint {
-            color: #8a8d91;
-            font-size: 0.65rem;
-            margin-top: 5px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: #fab005;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-            margin-top: 20px;
-        }
-
-        .submit-btn:hover {
-            opacity: 0.9;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .auth-note {
-            text-align: center;
-            margin-top: 15px;
-            color: #8a8d91;
-            font-size: 0.8rem;
-        }
-
-        .auth-note span {
-            color: #fab005;
-            cursor: pointer;
-        }
-
-        .auth-note span:hover {
-            text-decoration: underline;
-        }
-
-        .close-auth {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1c1f24;
-            border: 1px solid #333;
-            color: #8a8d91;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .close-auth:hover {
-            border-color: #fab005;
-            color: #fab005;
         }
 
         .search-results-header {
@@ -1385,88 +1053,6 @@
             <i class="ph ph-database"></i> Cache enabled
         </div>
 
-        <!-- Auth Popup -->
-        <div class="auth-popup" id="authPopup">
-            <div class="close-auth" id="closeAuth">
-                <i class="ph ph-x"></i>
-            </div>
-            <div class="auth-container">
-                <div class="auth-tabs">
-                    <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Login</button>
-                    <button class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</button>
-                </div>
-
-                <!-- Login Form -->
-                <div class="auth-form" id="loginForm">
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com">
-                        <div class="error-message" id="loginEmailError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-input" id="loginPassword" placeholder="••••••••">
-                        <div class="error-message" id="loginPasswordError"></div>
-                    </div>
-                    <button class="submit-btn" id="loginBtn" onclick="handleLogin()">Log In</button>
-                    <div class="auth-note">
-                        Don't have an account? <span onclick="switchAuthTab('signup')">Sign up</span>
-                    </div>
-                </div>
-
-                <!-- Signup Form -->
-                <div class="auth-form hidden" id="signupForm">
-                    <div class="avatar-selection">
-                        <label class="form-label">Choose Avatar (cannot be changed later)</label>
-                        <div class="avatar-grid" id="avatarGrid">
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1x1K7.png')">
-                                <img src="https://iili.io/qf1x1K7.png" alt="Avatar 1">
-                            </div>
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1IOa1.png')">
-                                <img src="https://iili.io/qf1IOa1.png" alt="Avatar 2">
-                            </div>
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1TCox.jpg')">
-                                <img src="https://iili.io/qf1TCox.jpg" alt="Avatar 3">
-                            </div>
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1TZ0B.jpg')">
-                                <img src="https://iili.io/qf1TZ0B.jpg" alt="Avatar 4">
-                            </div>
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1uxzG.jpg')">
-                                <img src="https://iili.io/qf1uxzG.jpg" alt="Avatar 5">
-                            </div>
-                            <div class="avatar-option" onclick="selectAvatar('https://iili.io/qf1AL8P.jpg')">
-                                <img src="https://iili.io/qf1AL8P.jpg" alt="Avatar 6">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Username (max 9 characters)</label>
-                        <input type="text" class="form-input" id="signupUsername" maxlength="9" placeholder="JohnDoe">
-                        <div class="error-message" id="usernameError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" id="signupEmail" placeholder="your@email.com">
-                        <div class="error-message" id="signupEmailError"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Password (3-8 characters)</label>
-                        <input type="password" class="form-input" id="signupPassword" placeholder="••••••••" minlength="3" maxlength="8">
-                        <div class="password-hint">Must be 3-8 characters long</div>
-                        <div class="error-message" id="signupPasswordError"></div>
-                    </div>
-
-                    <button class="submit-btn" id="signupBtn" onclick="handleSignup()">Create Account</button>
-                    <div class="auth-note">
-                        Already have an account? <span onclick="switchAuthTab('login')">Log in</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Success/Info Popup -->
         <div class="popup-overlay" id="popup">
             <div class="popup-content">
@@ -1491,28 +1077,14 @@
                 </div>
 
                 <div class="header-right">
-                    <div class="profile-icon" id="profileIcon">
-                        <i class="ph ph-user"></i>
-                    </div>
-                    <!-- Profile Dropdown -->
-                    <div class="profile-dropdown" id="profileDropdown">
-                        <div class="profile-header" id="profileHeader">
-                            <img src="" alt="Avatar" class="profile-avatar" id="profileAvatar">
-                            <div class="profile-info">
-                                <div class="profile-username" id="profileUsername"></div>
-                                <div class="profile-email" id="profileEmail"></div>
-                                <div class="profile-badge" id="profileBadge">Newsletter Subscribed</div>
-                            </div>
-                        </div>
-                        <div class="profile-menu-item logout" id="logoutBtn" onclick="handleLogout()">
-                            <i class="ph ph-sign-out"></i>
-                            <span>Logout</span>
-                        </div>
-                        <div class="profile-footer">
-                            Account created • Non-editable avatar
-                        </div>
-                    </div>
-                    <i class="ph ph-bell bell-icon"></i>
+                    <!-- YouTube Icon - Social Media Link (will add URLs later) -->
+                    <a href="#" class="social-icon youtube" id="youtubeLink" onclick="showPopup('YouTube', 'YouTube channel coming soon!')">
+                        <i class="ph-fill ph-youtube-logo"></i>
+                    </a>
+                    <!-- X (Twitter) Icon - Social Media Link (will add URLs later) -->
+                    <a href="#" class="social-icon x" id="xLink" onclick="showPopup('X', 'X profile coming soon!')">
+                        <i class="ph-fill ph-x-logo"></i>
+                    </a>
                 </div>
             </div>
 
@@ -1539,7 +1111,7 @@
                         </div>
                         <div class="newsletter-form">
                             <input type="email" class="newsletter-input" id="newsletterEmail" placeholder="your@email.com">
-                            <button class="newsletter-button" id="subscribeBtn" onclick="handleNewsletterSubscribe()">Subscribe</button>
+                            <button class="newsletter-button" id="subscribeBtn" onclick="showPopup('Newsletter', 'Newsletter subscription coming soon! This feature is still in development.')">Subscribe</button>
                         </div>
                     </div>
 
@@ -1600,7 +1172,7 @@
 
     <script type="module">
         // ============================================
-        // FIREBASE (with Authentication)
+        // FIREBASE (for Firestore only - NO AUTH)
         // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
         import { 
@@ -1609,18 +1181,8 @@
             collection,
             getDocs,
             query,
-            orderBy,
-            doc,
-            setDoc,
-            getDoc
+            orderBy
         } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAWsW8NaC-fs50D1hXganYW9gPCDUXRaMc",
@@ -1633,7 +1195,6 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
         
         enableIndexedDbPersistence(db).catch((err) => {
             if (err.code == 'failed-precondition') {
@@ -1646,312 +1207,7 @@
         });
 
         // ============================================
-        // AUTH STATE MANAGEMENT
-        // ============================================
-        let currentUser = null;
-        let selectedAvatar = null;
-
-        // Listen for auth state changes
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // User is signed in
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (userDoc.exists()) {
-                    currentUser = {
-                        uid: user.uid,
-                        email: user.email,
-                        ...userDoc.data()
-                    };
-                    updateUIForLoggedInUser();
-                    
-                    // Pre-fill newsletter email
-                    document.getElementById('newsletterEmail').value = user.email;
-                }
-            } else {
-                // User is signed out
-                currentUser = null;
-                updateUIForLoggedOutUser();
-            }
-        });
-
-        function updateUIForLoggedInUser() {
-            const profileIcon = document.getElementById('profileIcon');
-            const profileDropdown = document.getElementById('profileDropdown');
-            
-            if (currentUser) {
-                // Update profile icon
-                profileIcon.innerHTML = `<img src="${currentUser.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-                profileIcon.classList.add('logged-in');
-                
-                // Update dropdown
-                document.getElementById('profileAvatar').src = currentUser.avatar;
-                document.getElementById('profileUsername').textContent = currentUser.username;
-                document.getElementById('profileEmail').textContent = currentUser.email;
-                document.getElementById('profileBadge').textContent = '📧 Newsletter Subscribed';
-            }
-        }
-
-        function updateUIForLoggedOutUser() {
-            const profileIcon = document.getElementById('profileIcon');
-            profileIcon.innerHTML = '<i class="ph ph-user"></i>';
-            profileIcon.classList.remove('logged-in');
-            
-            // Hide dropdown if open
-            document.getElementById('profileDropdown').classList.remove('show');
-            
-            // Clear newsletter email
-            document.getElementById('newsletterEmail').value = '';
-        }
-
-        // ============================================
-        // AUTH FUNCTIONS
-        // ============================================
-        window.selectAvatar = function(avatarUrl) {
-            selectedAvatar = avatarUrl;
-            document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
-        };
-
-        window.handleSignup = async function() {
-            // Clear previous errors
-            clearErrors();
-            
-            // Get values
-            const username = document.getElementById('signupUsername').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value;
-            
-            // Validate
-            let isValid = true;
-            
-            if (!selectedAvatar) {
-                showError('usernameError', 'Please select an avatar');
-                isValid = false;
-            }
-            
-            if (!username) {
-                showError('usernameError', 'Username is required');
-                isValid = false;
-            } else if (username.length > 9) {
-                showError('usernameError', 'Username must be max 9 characters');
-                isValid = false;
-            }
-            
-            if (!email) {
-                showError('signupEmailError', 'Email is required');
-                isValid = false;
-            } else if (!isValidEmail(email)) {
-                showError('signupEmailError', 'Please enter a valid email');
-                isValid = false;
-            }
-            
-            if (!password) {
-                showError('signupPasswordError', 'Password is required');
-                isValid = false;
-            } else if (password.length < 3 || password.length > 8) {
-                showError('signupPasswordError', 'Password must be 3-8 characters');
-                isValid = false;
-            }
-            
-            if (!isValid) return;
-            
-            // Disable button
-            const btn = document.getElementById('signupBtn');
-            btn.disabled = true;
-            btn.textContent = 'Creating account...';
-            
-            try {
-                // Create user in Firebase Auth
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                
-                // Save user profile to Firestore
-                await setDoc(doc(db, 'users', user.uid), {
-                    username: username,
-                    email: email,
-                    avatar: selectedAvatar,
-                    newsletterSubscribed: true,
-                    createdAt: new Date(),
-                    avatarPermanent: true // Flag to indicate avatar cannot be changed
-                });
-                
-                // Auto-subscribe to newsletter
-                await setDoc(doc(db, 'newsletter', user.uid), {
-                    email: email,
-                    subscribedAt: new Date(),
-                    userId: user.uid
-                });
-                
-                // Close popup and show success
-                document.getElementById('authPopup').classList.remove('show');
-                showPopup('Welcome!', `Account created successfully, ${username}!`);
-                
-            } catch (error) {
-                console.error('Signup error:', error);
-                let message = 'Failed to create account';
-                
-                if (error.code === 'auth/email-already-in-use') {
-                    message = 'This email is already registered';
-                } else if (error.code === 'auth/weak-password') {
-                    message = 'Password is too weak';
-                } else if (error.code === 'auth/invalid-email') {
-                    message = 'Invalid email address';
-                }
-                
-                showError('signupEmailError', message);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Create Account';
-            }
-        };
-
-        window.handleLogin = async function() {
-            // Clear previous errors
-            document.getElementById('loginEmailError').textContent = '';
-            document.getElementById('loginPasswordError').textContent = '';
-            
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                if (!email) document.getElementById('loginEmailError').textContent = 'Email required';
-                if (!password) document.getElementById('loginPasswordError').textContent = 'Password required';
-                return;
-            }
-            
-            const btn = document.getElementById('loginBtn');
-            btn.disabled = true;
-            btn.textContent = 'Logging in...';
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                document.getElementById('authPopup').classList.remove('show');
-                showPopup('Welcome Back!', 'Successfully logged in!');
-            } catch (error) {
-                console.error('Login error:', error);
-                let message = 'Invalid email or password';
-                
-                if (error.code === 'auth/user-not-found') {
-                    message = 'No account found with this email';
-                } else if (error.code === 'auth/wrong-password') {
-                    message = 'Incorrect password';
-                } else if (error.code === 'auth/too-many-requests') {
-                    message = 'Too many failed attempts. Try again later';
-                }
-                
-                document.getElementById('loginEmailError').textContent = message;
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Log In';
-            }
-        };
-
-        window.handleLogout = async function() {
-            try {
-                await signOut(auth);
-                document.getElementById('profileDropdown').classList.remove('show');
-                showPopup('Logged Out', 'You have been successfully logged out');
-            } catch (error) {
-                console.error('Logout error:', error);
-            }
-        };
-
-        window.handleNewsletterSubscribe = function() {
-            const email = document.getElementById('newsletterEmail').value.trim();
-            
-            if (!email) {
-                showPopup('Newsletter', 'Please enter your email address');
-                return;
-            }
-            
-            if (!isValidEmail(email)) {
-                showPopup('Newsletter', 'Please enter a valid email address');
-                return;
-            }
-            
-            if (currentUser) {
-                showPopup('Subscribed!', 'You are already subscribed to our newsletter!');
-            } else {
-                // Open signup popup with email pre-filled
-                document.getElementById('authPopup').classList.add('show');
-                switchAuthTab('signup');
-                document.getElementById('signupEmail').value = email;
-            }
-        };
-
-        // ============================================
-        // UI HELPERS
-        // ============================================
-        window.switchAuthTab = function(tab) {
-            const loginTab = document.getElementById('loginTab');
-            const signupTab = document.getElementById('signupTab');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-            
-            if (tab === 'login') {
-                loginTab.classList.add('active');
-                signupTab.classList.remove('active');
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-                clearErrors();
-            } else {
-                signupTab.classList.add('active');
-                loginTab.classList.remove('active');
-                signupForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-                clearErrors();
-            }
-        };
-
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-        }
-
-        function showError(elementId, message) {
-            document.getElementById(elementId).textContent = message;
-        }
-
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
-
-        // Profile dropdown toggle
-        document.getElementById('profileIcon').addEventListener('click', (e) => {
-            e.stopPropagation();
-            const dropdown = document.getElementById('profileDropdown');
-            
-            if (currentUser) {
-                dropdown.classList.toggle('show');
-            } else {
-                // Show auth popup
-                document.getElementById('authPopup').classList.add('show');
-                switchAuthTab('login');
-            }
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('profileDropdown');
-            const profileIcon = document.getElementById('profileIcon');
-            
-            if (!profileIcon.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-        // Auth popup close
-        document.getElementById('closeAuth').addEventListener('click', () => {
-            document.getElementById('authPopup').classList.remove('show');
-        });
-
-        document.getElementById('authPopup').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('authPopup')) {
-                document.getElementById('authPopup').classList.remove('show');
-            }
-        });
-
-        // ============================================
-        // APP STATE (existing code continues below)
+        // APP STATE
         // ============================================
         let currentPage = 'home';
         let allPosts = [];
@@ -2062,6 +1318,12 @@
             { topic: "Fed Decision", icon: "ph-bank" },
             { topic: "NGX All Share", icon: "ph-trend-up" }
         ];
+
+        // Social media links (to be updated later)
+        const socialLinks = {
+            youtube: '#',
+            x: '#'
+        };
 
         function getYouTubeVideoId(url) {
             if (!url) return null;

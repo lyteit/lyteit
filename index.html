@@ -1442,46 +1442,42 @@
                 </div>
             </div>
 
-            <!-- MARKETING Section -->
+            <!-- MARKETING Section - Only Publish Ads & Partner with us -->
             <div class="menu-section">
                 <div class="menu-section-title">MARKETING</div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showPopup('Publish Ads', 'Advertising platform coming soon!')">
                     <i class="ph ph-megaphone"></i>
                     Publish Ads
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showPopup('Partner with us', 'Partner program coming soon!')">
                     <i class="ph ph-handshake"></i>
                     Partner with us
                 </div>
             </div>
 
-            <!-- GLOBAL Section -->
+            <!-- GLOBAL Section - Only Price Prediction & Trade -->
             <div class="menu-section">
                 <div class="menu-section-title">GLOBAL</div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="window.open('https://changelly.com/blog/bitcoin-price-prediction/', '_blank')">
                     <i class="ph ph-chart-line-up"></i>
                     Price Prediction
                 </div>
-                <div class="menu-item">
-                    <i class="ph ph-briefcase"></i>
-                    Business
-                </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="window.open('https://tradewglobal.com/QSqDX8', '_blank')">
                     <i class="ph ph-arrows-left-right"></i>
                     Trade
                 </div>
             </div>
 
-            <!-- NIGERIA Section -->
+            <!-- NIGERIA Section - Only Buy Crypto & We Invest -->
             <div class="menu-section">
                 <div class="menu-section-title">
                     🇳🇬 NIGERIA
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="window.open('https://dash.busha.io/signup?code=KjMAIX', '_blank')">
                     <i class="ph ph-currency-circle-dollar"></i>
                     Buy Crypto
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="window.open('https://get.cowrywise.com/r/Silvaw3x', '_blank')">
                     <i class="ph ph-trend-up"></i>
                     We Invest
                 </div>
@@ -2052,15 +2048,6 @@
             if (overlay) {
                 overlay.addEventListener('click', closeMenu);
             }
-
-            // Add click handlers to menu items (just show popup for now)
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    const text = item.textContent.trim();
-                    showPopup(text, 'This feature is coming soon!');
-                    closeMenu();
-                });
-            });
         }
 
         // ============================================
@@ -3339,7 +3326,7 @@
         renderTrending();
         setupEventDelegation();
         setupEventListeners();
-        setupMenu(); // Initialize the slide-out menu
+        setupMenu();
         updateTopNavigation('home');
         navigateTo('home');
     </script>

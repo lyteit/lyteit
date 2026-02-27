@@ -38,12 +38,150 @@
         body {
             background: #000;
             color: #fff;
+            overflow-x: hidden;
         }
 
         .app-container {
             max-width: 1200px;
             margin: 0 auto;
             position: relative;
+        }
+
+        /* Slide-out Menu Styles */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .slide-menu {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100vh;
+            background: #15171a;
+            border-left: 1px solid #333;
+            z-index: 1001;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .slide-menu.active {
+            right: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .menu-logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .menu-logo span { color: #fab005; }
+
+        .close-menu {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1c1f24;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8a8d91;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .close-menu:hover {
+            border-color: #fab005;
+            color: #fab005;
+            background: #2a2f38;
+        }
+
+        .menu-section {
+            margin-bottom: 25px;
+        }
+
+        .menu-section-title {
+            color: #fab005;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .menu-item:hover {
+            background: #1e2128;
+            color: #fab005;
+        }
+
+        .menu-item i {
+            color: #fab005;
+            font-size: 1.2rem;
+            width: 24px;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: #333;
+            margin: 20px 0;
+        }
+
+        .menu-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            text-align: center;
+            color: #8a8d91;
+            font-size: 0.7rem;
+        }
+
+        .country-badge {
+            background: #fab00520;
+            color: #fab005;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            margin-left: 8px;
         }
 
         .sticky-header {
@@ -76,7 +214,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .desktop-menu {
@@ -154,14 +292,30 @@
             background: #2a2f38;
         }
 
-        .social-icon.youtube:hover {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-
         .social-icon.x:hover {
             border-color: #ffffff;
             color: #ffffff;
+        }
+
+        .hamburger-menu {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1c1f24;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8a8d91;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hamburger-menu:hover {
+            border-color: #fab005;
+            color: #fab005;
+            background: #2a2f38;
         }
 
         .search-container {
@@ -323,7 +477,6 @@
         }
         
         /* ===== AGGRESSIVE AD BUTTON FIX ===== */
-        /* This will force black text on yellow background NO MATTER WHAT */
         .ad-button,
         a.ad-button,
         button.ad-button,
@@ -362,7 +515,6 @@
             visibility: visible !important;
         }
 
-        /* Force all text inside to be black */
         .ad-button *,
         .ad-button span,
         .ad-button i,
@@ -378,7 +530,6 @@
             stroke: #000000 !important;
         }
 
-        /* Specifically target the icon */
         .ad-button i,
         .ad-button i:before,
         .ad-button .ph,
@@ -387,7 +538,6 @@
             background: transparent !important;
         }
 
-        /* Hover state */
         .ad-button:hover,
         a.ad-button:hover {
             background: #e5a002 !important;
@@ -397,7 +547,6 @@
             box-shadow: 0 4px 15px rgba(250, 176, 5, 0.5) !important;
         }
 
-        /* Active state */
         .ad-button:active,
         a.ad-button:active {
             background: #c88a00 !important;
@@ -406,18 +555,11 @@
             transform: translateY(0) !important;
         }
 
-        /* Focus state */
         .ad-button:focus-visible {
             outline: 2px solid #000 !important;
             outline-offset: 2px !important;
         }
-
-        /* Debug outline to see if button is being rendered */
-        .ad-button {
-            outline: none !important;
-        }
         
-        /* Ensure text in ad content is visible */
         .news-item.ad-item .news-item-title {
             color: #fff;
             font-weight: 600;
@@ -1275,7 +1417,6 @@
             }
         }
         
-        /* Loading spinner animation */
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -1288,6 +1429,71 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Slide-out Menu -->
+        <div class="menu-overlay" id="menuOverlay"></div>
+        <div class="slide-menu" id="slideMenu">
+            <div class="menu-header">
+                <div class="menu-logo">
+                    <i class="ph-fill ph-lightning"></i>
+                    lyteit<span>.com</span>
+                </div>
+                <div class="close-menu" id="closeMenu">
+                    <i class="ph ph-x"></i>
+                </div>
+            </div>
+
+            <!-- MARKETING Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">MARKETING</div>
+                <div class="menu-item">
+                    <i class="ph ph-megaphone"></i>
+                    Publish Ads
+                </div>
+                <div class="menu-item">
+                    <i class="ph ph-handshake"></i>
+                    Partner with us
+                </div>
+            </div>
+
+            <!-- GLOBAL Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">GLOBAL</div>
+                <div class="menu-item">
+                    <i class="ph ph-chart-line-up"></i>
+                    Price Prediction
+                </div>
+                <div class="menu-item">
+                    <i class="ph ph-briefcase"></i>
+                    Business
+                </div>
+                <div class="menu-item">
+                    <i class="ph ph-arrows-left-right"></i>
+                    Trade
+                </div>
+            </div>
+
+            <!-- NIGERIA Section -->
+            <div class="menu-section">
+                <div class="menu-section-title">
+                    🇳🇬 NIGERIA
+                </div>
+                <div class="menu-item">
+                    <i class="ph ph-currency-circle-dollar"></i>
+                    Buy Crypto
+                </div>
+                <div class="menu-item">
+                    <i class="ph ph-trend-up"></i>
+                    We Invest
+                </div>
+            </div>
+
+            <div class="menu-divider"></div>
+
+            <div class="menu-footer">
+                ⚡ lyteit.com © 2026 · All rights reserved
+            </div>
+        </div>
+
         <div class="cache-indicator" id="cacheIndicator">
             <i class="ph ph-database"></i> Cache enabled
         </div>
@@ -1316,14 +1522,14 @@
                 </div>
 
                 <div class="header-right">
-                    <!-- YouTube Icon - Social Media Link -->
-                    <a href="#" class="social-icon youtube" id="youtubeLink" onclick="showPopup('YouTube', 'YouTube channel coming soon!')">
-                        <i class="ph-fill ph-youtube-logo"></i>
-                    </a>
-                    <!-- X (Twitter) Icon - Social Media Link -->
+                    <!-- X (Twitter) Icon -->
                     <a href="#" class="social-icon x" id="xLink" onclick="showPopup('X', 'X profile coming soon!')">
                         <i class="ph-fill ph-x-logo"></i>
                     </a>
+                    <!-- Hamburger Menu -->
+                    <div class="hamburger-menu" id="hamburgerMenu">
+                        <i class="ph ph-list"></i>
+                    </div>
                 </div>
             </div>
 
@@ -1524,7 +1730,6 @@
                 
                 this.destroyCharts();
                 
-                // Use requestIdleCallback for better performance
                 if ('requestIdleCallback' in window) {
                     requestIdleCallback(() => {
                         this.createChartsBatch(coins);
@@ -1538,7 +1743,7 @@
                 coins.forEach((coin, index) => {
                     setTimeout(() => {
                         this.createChartWithRetry(coin);
-                    }, index * 50); // Stagger chart creation
+                    }, index * 50);
                 });
             }
             
@@ -1587,7 +1792,7 @@
                         options: { 
                             responsive: true, 
                             maintainAspectRatio: false, 
-                            animation: { duration: 0 }, // Disable animation for performance
+                            animation: { duration: 0 },
                             plugins: { 
                                 legend: { display: false }, 
                                 tooltip: { enabled: false } 
@@ -1704,7 +1909,7 @@
         let displayedItems = [];
         let currentDisplayCount = 0;
         const POSTS_PER_BATCH = 3;
-        const ADS_FREQUENCY = 5; // Show native ad every 5 posts
+        const ADS_FREQUENCY = 5;
         let featuredPost = null;
 
         let isSearching = false;
@@ -1818,6 +2023,47 @@
         ];
 
         // ============================================
+        // MENU FUNCTIONS
+        // ============================================
+        function setupMenu() {
+            const hamburger = document.getElementById('hamburgerMenu');
+            const closeBtn = document.getElementById('closeMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const menu = document.getElementById('slideMenu');
+
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    overlay.classList.add('active');
+                    menu.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+
+            function closeMenu() {
+                overlay.classList.remove('active');
+                menu.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeMenu);
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', closeMenu);
+            }
+
+            // Add click handlers to menu items (just show popup for now)
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const text = item.textContent.trim();
+                    showPopup(text, 'This feature is coming soon!');
+                    closeMenu();
+                });
+            });
+        }
+
+        // ============================================
         // AD FUNCTIONS (Native Ads Only)
         // ============================================
         async function loadAds() {
@@ -1831,7 +2077,6 @@
                 });
                 
                 const now = new Date();
-                // Only include native ads, filter out popup and direct
                 allAds = ads.filter(ad => {
                     if (!ad.active) return false;
                     
@@ -1845,7 +2090,6 @@
                     
                     if (ad.maxClicks > 0 && (ad.clicks || 0) >= ad.maxClicks) return false;
                     
-                    // Only include native ads
                     return ad.type === 'native';
                 });
                 
@@ -1862,13 +2106,11 @@
                     clicks: increment(1)
                 });
                 console.log('Ad click tracked:', adId);
-                // Open the link after tracking
                 if (event && event.target && event.target.href) {
                     window.open(event.target.href, '_blank');
                 }
             } catch (error) {
                 console.error('Error tracking ad click:', error);
-                // Still open the link even if tracking fails
                 if (event && event.target && event.target.href) {
                     window.open(event.target.href, '_blank');
                 }
@@ -1895,7 +2137,6 @@
             return shuffled.slice(0, count);
         }
 
-        // ===== FIXED: renderNativeAd with EXTREME inline styles =====
         function renderNativeAd(ad) {
             return `
                 <div class="news-item ad-item" data-ad-id="${ad.id}" data-ad="true">
@@ -1911,7 +2152,6 @@
                         <div class="post-content-container">
                             <p>${ad.text}</p>
                         </div>
-                        <!-- EXTREME INLINE STYLES TO FORCE BLACK TEXT ON YELLOW -->
                         <a href="${ad.buttonLink}" 
                            class="ad-button" 
                            target="_blank" 
@@ -2070,7 +2310,7 @@
                 const feedPromises = feedsToFetch.map(async (feed) => {
                     try {
                         const controller = new AbortController();
-                        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                        const timeoutId = setTimeout(() => controller.abort(), 10000);
                         
                         const response = await fetch(RSS2JSON_API + encodeURIComponent(feed.url), {
                             signal: controller.signal
@@ -2335,7 +2575,6 @@
             const mainContent = document.getElementById('mainContent');
             
             mainContent.addEventListener('click', (e) => {
-                // Handle read more buttons
                 const readMoreBtn = e.target.closest('.read-more-btn');
                 if (readMoreBtn) {
                     e.preventDefault();
@@ -2350,7 +2589,6 @@
                     return;
                 }
                 
-                // Handle video containers
                 const videoContainer = e.target.closest('.video-container');
                 if (videoContainer) {
                     e.preventDefault();
@@ -2361,22 +2599,18 @@
                     return;
                 }
                 
-                // Handle ad button clicks (already handled by onclick)
                 if (e.target.closest('.ad-button')) {
-                    return; // Let the onclick handler do its job
+                    return;
                 }
                 
-                // Handle news items (open links)
                 const newsItem = e.target.closest('.news-item');
                 if (newsItem && !e.target.closest('a') && !e.target.closest('button')) {
-                    // Check if it's an ad
                     const isAd = newsItem.dataset.ad === 'true';
                     if (isAd) {
                         const adId = newsItem.dataset.adId;
                         if (adId) {
                             trackAdImpression(adId);
                         }
-                        // Find and click the ad button instead
                         const adButton = newsItem.querySelector('.ad-button');
                         if (adButton) {
                             adButton.click();
@@ -2384,14 +2618,12 @@
                         return;
                     }
                     
-                    // Regular post - open source URL
                     const sourceUrl = newsItem.dataset.sourceUrl;
                     if (sourceUrl && sourceUrl !== '#') {
                         window.open(sourceUrl, '_blank');
                     }
                 }
                 
-                // Handle video cards (open links)
                 const videoCard = e.target.closest('.video-card');
                 if (videoCard && !e.target.closest('a') && !e.target.closest('button') && !e.target.closest('.video-container')) {
                     const sourceUrl = videoCard.dataset.sourceUrl;
@@ -2400,7 +2632,6 @@
                     }
                 }
                 
-                // Handle featured cards (open links)
                 const featuredCard = e.target.closest('.featured-card');
                 if (featuredCard && !e.target.closest('a') && !e.target.closest('button')) {
                     const sourceUrl = featuredCard.dataset.sourceUrl;
@@ -2474,8 +2705,9 @@
                     navigateTo('home'); 
                 }
                 else if (page === 'menu') { 
-                    showPopup('Menu', 'Menu coming soon!'); 
-                    navigateTo('home'); 
+                    // Open slide menu instead of showing popup
+                    document.getElementById('hamburgerMenu').click();
+                    navigateTo('home');
                 }
             }
         };
@@ -2520,7 +2752,6 @@
                 
                 const regularPosts = allPosts.filter(p => p.id !== featuredPost.id);
                 
-                // Reset displayed items
                 displayedItems = [];
                 let postCount = 0;
                 
@@ -2528,7 +2759,6 @@
                     displayedItems.push(regularPosts[i]);
                     postCount++;
                     
-                    // Insert native ad after every 5th post
                     if (postCount % ADS_FREQUENCY === 0) {
                         const nativeAds = getNativeAds(1);
                         if (nativeAds.length > 0) {
@@ -2537,13 +2767,10 @@
                     }
                 }
                 
-                // Reset display count
                 currentDisplayCount = 0;
                 
-                // Render featured post
                 renderFeaturedPost(featuredPost);
                 
-                // Load first batch of posts
                 const newsList = document.getElementById('newsList');
                 if (newsList) {
                     await loadMorePosts(true);
@@ -2552,10 +2779,8 @@
                 setupSearch();
                 setupRefreshButton();
                 
-                // Re-attach load more button listener
                 const loadMoreBtn = document.getElementById('loadMoreBtn');
                 if (loadMoreBtn) {
-                    // Remove any existing listeners
                     const newLoadMoreBtn = loadMoreBtn.cloneNode(true);
                     loadMoreBtn.parentNode.replaceChild(newLoadMoreBtn, loadMoreBtn);
                     
@@ -2651,11 +2876,9 @@
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                // Remove existing listeners
                 const newSearchInput = searchInput.cloneNode(true);
                 searchInput.parentNode.replaceChild(newSearchInput, searchInput);
                 
-                // Create debounced search function
                 const debouncedSearch = debounce((term) => {
                     performSearch(term);
                 }, 300);
@@ -3083,7 +3306,6 @@
                 }
             });
 
-            // Newsletter and app buttons
             document.getElementById('subscribeBtn')?.addEventListener('click', () => {
                 showPopup('Newsletter', 'Newsletter subscription coming soon! This feature is still in development.');
             });
@@ -3117,6 +3339,7 @@
         renderTrending();
         setupEventDelegation();
         setupEventListeners();
+        setupMenu(); // Initialize the slide-out menu
         updateTopNavigation('home');
         navigateTo('home');
     </script>

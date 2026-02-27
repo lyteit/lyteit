@@ -784,6 +784,19 @@
             line-height: 1.5;
             margin: 5px 0;
         }
+        
+        /* Preserve line breaks in content */
+        .post-content-container p {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 8px;
+        }
+        
+        .post-content-container br {
+            display: block;
+            content: "";
+            margin-top: 4px;
+        }
 
         .load-more-container {
             display: flex;
@@ -2175,7 +2188,7 @@
         }
 
         // ============================================
-        // UTILITY FUNCTIONS
+        // UPDATED UTILITY FUNCTIONS - NOW PRESERVES LINE BREAKS
         // ============================================
         function debounce(func, wait) {
             let timeout;
@@ -2205,23 +2218,69 @@
             });
         }
 
+        // UPDATED: Preserves line breaks using <br> tags
         function formatContent(text) {
             if (!text) return '';
+            
+            // First make links clickable
             const withLinks = makeLinksClickable(text);
+            
+            // Split by double line breaks for paragraphs, but preserve single line breaks
             return withLinks.split(/\n\s*\n/).map(para => {
                 if (!para.trim()) return '';
+                
+                // For each paragraph, preserve single line breaks
                 const lines = para.split('\n').map(l => l.trim()).filter(l => l);
+                
                 if (lines.length === 0) return '';
                 if (lines.length === 1) return `<p>${lines[0]}</p>`;
+                
+                // Join lines with <br> tags to preserve line breaks
                 return `<p>${lines.join('<br>')}</p>`;
             }).join('');
         }
 
+        // UPDATED: Better truncation that preserves structure
         function truncateForPreview(text, limit = 150) {
             if (!text) return '';
-            const plain = text.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-            if (plain.length <= limit) return formatContent(text);
-            return `<p>${plain.substring(0, limit).split(' ').slice(0, -1).join(' ')}...</p>`;
+            
+            // For preview, we want to show the first part but preserve basic structure
+            const paragraphs = text.split(/\n\s*\n/);
+            let result = '';
+            let charCount = 0;
+            
+            for (const para of paragraphs) {
+                if (charCount >= limit) break;
+                
+                const plainPara = para.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+                
+                if (charCount + plainPara.length > limit) {
+                    // Truncate this paragraph
+                    const words = plainPara.split(' ');
+                    let truncated = '';
+                    for (const word of words) {
+                        if ((truncated.length + word.length + 1) <= (limit - charCount)) {
+                            truncated += (truncated ? ' ' : '') + word;
+                        } else {
+                            truncated += '...';
+                            break;
+                        }
+                    }
+                    result += `<p>${truncated}</p>`;
+                    break;
+                } else {
+                    // Add full paragraph with line breaks preserved
+                    const lines = para.split('\n').map(l => l.trim()).filter(l => l);
+                    if (lines.length === 1) {
+                        result += `<p>${lines[0]}</p>`;
+                    } else {
+                        result += `<p>${lines.join('<br>')}</p>`;
+                    }
+                    charCount += plainPara.length;
+                }
+            }
+            
+            return result;
         }
 
         function getRelativeTime(timestamp) {

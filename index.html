@@ -252,7 +252,7 @@
             text-decoration: underline;
         }
 
-        /* Ad Styles */
+        /* Native Ad Styles */
         .ad-badge {
             background: #fab00520;
             color: #fab005;
@@ -284,7 +284,6 @@
             font-size: 0.7rem;
         }
         
-        /* Native Ad Card */
         .news-item.ad-item {
             border-left: 2px solid #fab005;
             background: rgba(250, 176, 5, 0.02);
@@ -319,220 +318,11 @@
             margin-left: 5px;
             font-size: 0.9rem;
         }
-        
-        /* Popup Ad */
-        .popup-ad-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .popup-ad-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .popup-ad-container {
-            background: #15171a;
-            border-radius: 24px;
-            padding: 35px;
-            max-width: 450px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid #fab005;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-        
-        .popup-ad-overlay.show .popup-ad-container {
-            transform: scale(1);
-        }
-        
-        .popup-ad-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #1c1f24;
-            border: 1px solid #333;
-            color: #8a8d91;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .popup-ad-close.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        .popup-ad-close:hover {
-            border-color: #fab005;
-            color: #fab005;
-        }
-        
-        .popup-ad-countdown {
-            text-align: center;
-            margin: 20px 0 0;
-            color: #8a8d91;
-            font-size: 0.85rem;
-            padding-top: 15px;
-            border-top: 1px solid #333;
-        }
-        
-        .popup-ad-countdown span {
-            color: #fab005;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .popup-ad-badge {
-            background: #fab00520;
-            color: #fab005;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        .popup-ad-badge i {
-            margin-right: 5px;
-        }
-        
-        .popup-ad-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            line-height: 1.3;
-        }
-        
-        .popup-ad-description {
-            color: #8a8d91;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            font-size: 0.95rem;
-        }
-        
-        .popup-ad-image {
-            width: 100%;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            border: 1px solid #333;
-        }
-        
-        .popup-ad-button {
-            background: #fab005;
-            color: #000 !important;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 40px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            transition: all 0.2s ease;
-        }
-        
-        .popup-ad-button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(250, 176, 5, 0.4);
-        }
-        
-        /* Direct Link Ad Modal */
-        .direct-modal {
-            text-align: center;
-        }
-        
-        .direct-modal .popup-icon {
-            font-size: 3rem;
-            color: #fab005;
-            margin-bottom: 15px;
-        }
-        
-        .direct-modal .popup-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-        
-        .direct-modal .popup-message {
-            color: #8a8d91;
-            margin-bottom: 20px;
-        }
-        
-        .direct-countdown {
-            background: #1e2128;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-size: 1.1rem;
-        }
-        
-        .direct-countdown span {
-            color: #fab005;
-            font-weight: 700;
-            font-size: 1.3rem;
-        }
-        
-        .direct-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .direct-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 30px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-        }
-        
-        .direct-btn.primary {
-            background: #fab005;
-            color: #000;
-        }
-        
-        .direct-btn.secondary {
-            background: #1e2128;
-            color: #fff;
-            border: 1px solid #333;
-        }
-        
-        .direct-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
 
         .featured-card { 
             padding: 0 0 20px 0; 
             margin-bottom: 20px;
+            cursor: pointer;
         }
         .featured-img { 
             width: 100%; 
@@ -1324,7 +1114,6 @@
             margin: 4px 0;
         }
 
-        /* Error Toast Styles */
         .error-toast {
             position: fixed;
             bottom: 20px;
@@ -1382,39 +1171,7 @@
             <i class="ph ph-database"></i> Cache enabled
         </div>
 
-        <!-- Popup Ad Container -->
-        <div class="popup-ad-overlay" id="popupAdOverlay">
-            <div class="popup-ad-container" id="popupAdContainer">
-                <div class="popup-ad-close" id="popupAdClose">
-                    <i class="ph ph-x"></i>
-                </div>
-                <div class="popup-ad-badge" id="popupAdBadge">
-                    <i class="ph ph-megaphone"></i> Sponsored
-                </div>
-                <div id="popupAdContent"></div>
-                <div class="popup-ad-countdown" id="popupAdCountdown">
-                    Close available in <span id="countdownTimer">5</span> seconds
-                </div>
-            </div>
-        </div>
-
-        <!-- Direct Link Ad Modal -->
-        <div class="popup-overlay" id="directLinkModal">
-            <div class="popup-content direct-modal">
-                <div class="popup-icon"><i class="ph ph-link"></i></div>
-                <div class="popup-title">Sponsored Redirect</div>
-                <div class="popup-message" id="directLinkMessage">You'll be redirected to our sponsor's website</div>
-                <div class="direct-countdown">
-                    Redirecting in <span id="directCountdown">10</span> seconds
-                </div>
-                <div class="direct-buttons">
-                    <button class="direct-btn secondary" id="cancelDirect">Cancel</button>
-                    <button class="direct-btn primary" id="proceedDirect">Proceed Now</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Success/Info Popup -->
+        <!-- Info Popup (only for non-ad messages) -->
         <div class="popup-overlay" id="popup">
             <div class="popup-content">
                 <div class="popup-icon"><i class="ph ph-rocket"></i></div>
@@ -1809,7 +1566,7 @@
         let displayedItems = [];
         let currentDisplayCount = 0;
         const POSTS_PER_BATCH = 3;
-        const ADS_FREQUENCY = 5;
+        const ADS_FREQUENCY = 5; // Show native ad every 5 posts
         let featuredPost = null;
 
         let isSearching = false;
@@ -1817,18 +1574,12 @@
         const expandedPosts = new Map();
 
         let exploreCategory = 'all';
-        let currentPopupAd = null;
-        let popupCountdown = null;
-        let directCountdown = null;
-        let currentDirectAd = null;
         let pageLoadTime = Date.now();
 
         const postCache = new Map();
         const CACHE_DURATION = 5 * 60 * 1000;
 
         const VISIT_KEY = 'lyteit_visits';
-        const LAST_POPUP_KEY = 'lyteit_last_popup';
-        const LAST_DIRECT_KEY = 'lyteit_last_direct';
         
         let visitCount = parseInt(localStorage.getItem(VISIT_KEY) || '0');
         visitCount++;
@@ -1928,7 +1679,7 @@
         ];
 
         // ============================================
-        // AD FUNCTIONS
+        // AD FUNCTIONS (Native Ads Only)
         // ============================================
         async function loadAds() {
             return errorHandler.safeAsync(async () => {
@@ -1941,6 +1692,7 @@
                 });
                 
                 const now = new Date();
+                // Only include native ads, filter out popup and direct
                 allAds = ads.filter(ad => {
                     if (!ad.active) return false;
                     
@@ -1954,154 +1706,13 @@
                     
                     if (ad.maxClicks > 0 && (ad.clicks || 0) >= ad.maxClicks) return false;
                     
-                    if (ad.type === 'popup' && ad.popupType === 'video') return false;
-                    
-                    return true;
+                    // Only include native ads
+                    return ad.type === 'native';
                 });
                 
-                console.log(`Loaded ${allAds.length} active ads`);
-                
-                if (visitCount % 5 === 0) {
-                    console.log('5th visit detected - checking for ads');
-                    
-                    setTimeout(() => {
-                        checkAndShowDirectAd();
-                    }, 10000);
-                    
-                    checkAndShowPopupAd();
-                }
+                console.log(`Loaded ${allAds.length} native ads`);
                 
             }, null, 'loadAds');
-        }
-
-        function checkAndShowPopupAd() {
-            const lastPopup = localStorage.getItem(LAST_POPUP_KEY);
-            const now = Date.now();
-            
-            if (lastPopup && (now - parseInt(lastPopup)) < 7 * 24 * 60 * 60 * 1000) {
-                console.log('Popup shown recently, skipping');
-                return;
-            }
-            
-            const popupAds = allAds.filter(ad => ad.type === 'popup' && ad.popupType !== 'video');
-            if (popupAds.length === 0) return;
-            
-            const randomIndex = Math.floor(Math.random() * popupAds.length);
-            const ad = popupAds[randomIndex];
-            
-            localStorage.setItem(LAST_POPUP_KEY, now.toString());
-            
-            showPopupAd(ad);
-        }
-
-        function checkAndShowDirectAd() {
-            const lastDirect = localStorage.getItem(LAST_DIRECT_KEY);
-            const now = Date.now();
-            
-            if (lastDirect && (now - parseInt(lastDirect)) < 7 * 24 * 60 * 60 * 1000) {
-                console.log('Direct ad shown recently, skipping');
-                return;
-            }
-            
-            const directAds = allAds.filter(ad => ad.type === 'direct');
-            if (directAds.length === 0) return;
-            
-            const randomIndex = Math.floor(Math.random() * directAds.length);
-            const ad = directAds[randomIndex];
-            
-            localStorage.setItem(LAST_DIRECT_KEY, now.toString());
-            
-            showDirectAd(ad);
-        }
-
-        function showPopupAd(ad) {
-            currentPopupAd = ad;
-            const overlay = document.getElementById('popupAdOverlay');
-            const content = document.getElementById('popupAdContent');
-            const closeBtn = document.getElementById('popupAdClose');
-            const countdownEl = document.getElementById('popupAdCountdown');
-            const timerEl = document.getElementById('countdownTimer');
-            
-            trackAdImpression(ad.id);
-            
-            let html = '';
-            
-            if (ad.popupType === 'text') {
-                html = `
-                    <div class="popup-ad-title">${ad.title}</div>
-                    <div class="popup-ad-description">${ad.description}</div>
-                `;
-            } else if (ad.popupType === 'image') {
-                html = `
-                    <div class="popup-ad-title">${ad.title}</div>
-                    <img src="${ad.image}" class="popup-ad-image" alt="${ad.title}">
-                    <div class="popup-ad-description">${ad.description}</div>
-                `;
-            }
-            
-            html += `
-                <a href="${ad.buttonLink}" class="popup-ad-button" target="_blank" onclick="trackAdClick('${ad.id}', event)">
-                    ${ad.buttonText} <i class="ph ph-arrow-right"></i>
-                </a>
-            `;
-            
-            content.innerHTML = html;
-            
-            overlay.classList.add('show');
-            
-            closeBtn.classList.remove('show');
-            countdownEl.style.display = 'block';
-            let seconds = 5;
-            timerEl.textContent = seconds;
-            
-            if (popupCountdown) clearInterval(popupCountdown);
-            
-            popupCountdown = setInterval(() => {
-                seconds--;
-                timerEl.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(popupCountdown);
-                    closeBtn.classList.add('show');
-                    countdownEl.style.display = 'none';
-                }
-            }, 1000);
-        }
-
-        function showDirectAd(ad) {
-            currentDirectAd = ad;
-            const modal = document.getElementById('directLinkModal');
-            const countdownEl = document.getElementById('directCountdown');
-            const messageEl = document.getElementById('directLinkMessage');
-            
-            trackAdImpression(ad.id);
-            
-            messageEl.textContent = `You'll be redirected to ${ad.sponsor}`;
-            modal.classList.add('show');
-            
-            let seconds = 10;
-            countdownEl.textContent = seconds;
-            
-            if (directCountdown) clearInterval(directCountdown);
-            
-            directCountdown = setInterval(() => {
-                seconds--;
-                countdownEl.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(directCountdown);
-                    redirectToDirectAd();
-                }
-            }, 1000);
-        }
-
-        function redirectToDirectAd() {
-            if (currentDirectAd) {
-                trackAdClick(currentDirectAd.id);
-                window.open(currentDirectAd.redirectUrl, '_blank');
-                document.getElementById('directLinkModal').classList.remove('show');
-                currentDirectAd = null;
-            }
         }
 
         window.trackAdClick = async function(adId, event) {
@@ -2139,7 +1750,7 @@
 
         function renderNativeAd(ad) {
             return `
-                <div class="news-item ad-item" id="ad-${ad.id}">
+                <div class="news-item ad-item" id="ad-${ad.id}" data-ad-id="${ad.id}">
                     <div class="ad-badge">
                         <i class="ph ph-megaphone"></i> Sponsored
                     </div>
@@ -2553,6 +2164,13 @@
                 // Handle news items (open links)
                 const newsItem = e.target.closest('.news-item');
                 if (newsItem && !e.target.closest('a') && !e.target.closest('button')) {
+                    // Check if it's an ad
+                    const adId = newsItem.dataset.adId;
+                    if (adId) {
+                        // Track impression when clicked
+                        trackAdImpression(adId);
+                    }
+                    
                     const link = newsItem.querySelector('a[href]');
                     if (link) {
                         window.open(link.href, '_blank');
@@ -2600,7 +2218,7 @@
         }
 
         function playVideo(videoId) {
-            const container = document.getElementById(`video-${videoId}`);
+            const container = document.querySelector(`[data-video-id="${videoId}"]`);
             if (!container) return;
             
             const overlay = container.querySelector('.video-play-overlay');
@@ -2688,6 +2306,7 @@
                 
                 const regularPosts = allPosts.filter(p => p.id !== featuredPost.id);
                 
+                // Reset displayed items
                 displayedItems = [];
                 let postCount = 0;
                 
@@ -2695,6 +2314,7 @@
                     displayedItems.push(regularPosts[i]);
                     postCount++;
                     
+                    // Insert native ad after every 5th post
                     if (postCount % ADS_FREQUENCY === 0) {
                         const nativeAds = getNativeAds(1);
                         if (nativeAds.length > 0) {
@@ -2703,11 +2323,32 @@
                     }
                 }
                 
+                // Reset display count
                 currentDisplayCount = 0;
+                
+                // Render featured post
                 renderFeaturedPost(featuredPost);
-                await loadMorePosts(true);
+                
+                // Load first batch of posts
+                const newsList = document.getElementById('newsList');
+                if (newsList) {
+                    await loadMorePosts(true);
+                }
+                
                 setupSearch();
                 setupRefreshButton();
+                
+                // Re-attach load more button listener
+                const loadMoreBtn = document.getElementById('loadMoreBtn');
+                if (loadMoreBtn) {
+                    // Remove any existing listeners
+                    const newLoadMoreBtn = loadMoreBtn.cloneNode(true);
+                    loadMoreBtn.parentNode.replaceChild(newLoadMoreBtn, loadMoreBtn);
+                    
+                    newLoadMoreBtn.addEventListener('click', async () => {
+                        await loadMorePosts(false);
+                    });
+                }
                 
             }, null, 'loadHomePage');
         }
@@ -2715,15 +2356,18 @@
         function setupRefreshButton() {
             const refreshBtn = document.getElementById('refreshRSSBtn');
             if (refreshBtn) {
-                refreshBtn.addEventListener('click', async () => {
-                    refreshBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Refreshing...';
-                    refreshBtn.disabled = true;
+                const newRefreshBtn = refreshBtn.cloneNode(true);
+                refreshBtn.parentNode.replaceChild(newRefreshBtn, refreshBtn);
+                
+                newRefreshBtn.addEventListener('click', async () => {
+                    newRefreshBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Refreshing...';
+                    newRefreshBtn.disabled = true;
                     
                     postCache.delete('firebase-posts');
                     await loadHomePage();
                     
-                    refreshBtn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Refresh News';
-                    refreshBtn.disabled = false;
+                    newRefreshBtn.innerHTML = '<i class="ph ph-arrow-clockwise"></i> Refresh News';
+                    newRefreshBtn.disabled = false;
                 });
             }
         }
@@ -2736,7 +2380,8 @@
                 const list = document.getElementById('newsList');
                 
                 if (!list) return;
-                if (btn) { 
+                
+                if (btn && !reset) { 
                     btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Loading...'; 
                     btn.disabled = true; 
                 }
@@ -2749,7 +2394,9 @@
                     if (reset && list.innerHTML === '') {
                         list.innerHTML = '<div class="loading">No more posts</div>';
                     }
-                    document.getElementById('loadMoreContainer').style.display = 'none'; 
+                    if (document.getElementById('loadMoreContainer')) {
+                        document.getElementById('loadMoreContainer').style.display = 'none'; 
+                    }
                     return; 
                 }
                 
@@ -2784,7 +2431,11 @@
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
+                // Remove existing listeners
+                const newSearchInput = searchInput.cloneNode(true);
+                searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+                
+                newSearchInput.addEventListener('input', (e) => {
                     const term = e.target.value.toLowerCase().trim();
                     performSearch(term);
                 });
@@ -2834,7 +2485,10 @@
                 header.style.display = 'block';
                 header.innerHTML = `Found ${filtered.length} result${filtered.length > 1 ? 's' : ''} for "${term}" <span class="clear-search" id="clearSearchBtn">Clear search</span>`;
                 
-                document.getElementById('clearSearchBtn').addEventListener('click', clearSearch);
+                const clearBtn = document.getElementById('clearSearchBtn');
+                if (clearBtn) {
+                    clearBtn.addEventListener('click', clearSearch);
+                }
                 
                 const list = document.getElementById('newsList');
                 if (!filtered.length) {
@@ -2857,7 +2511,10 @@
 
         window.clearSearch = function() {
             searchTerm = '';
-            document.getElementById('searchInput').value = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+            }
             performSearch('');
         };
 
@@ -3187,37 +2844,6 @@
             document.getElementById('popup')?.addEventListener('click', (e) => {
                 if (e.target === document.getElementById('popup')) {
                     document.getElementById('popup').classList.remove('show');
-                }
-            });
-
-            document.getElementById('popupAdClose').addEventListener('click', () => {
-                document.getElementById('popupAdOverlay').classList.remove('show');
-                if (popupCountdown) clearInterval(popupCountdown);
-            });
-
-            document.getElementById('popupAdOverlay').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('popupAdOverlay')) {
-                    document.getElementById('popupAdOverlay').classList.remove('show');
-                    if (popupCountdown) clearInterval(popupCountdown);
-                }
-            });
-
-            document.getElementById('cancelDirect')?.addEventListener('click', () => {
-                document.getElementById('directLinkModal').classList.remove('show');
-                if (directCountdown) clearInterval(directCountdown);
-                currentDirectAd = null;
-            });
-
-            document.getElementById('proceedDirect')?.addEventListener('click', () => {
-                if (directCountdown) clearInterval(directCountdown);
-                redirectToDirectAd();
-            });
-
-            document.getElementById('directLinkModal').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('directLinkModal')) {
-                    document.getElementById('directLinkModal').classList.remove('show');
-                    if (directCountdown) clearInterval(directCountdown);
-                    currentDirectAd = null;
                 }
             });
 

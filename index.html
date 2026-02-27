@@ -322,63 +322,99 @@
             background: rgba(250, 176, 5, 0.08);
         }
         
-        /* FIXED: Ad button styles - text now definitely visible */
-        .ad-button {
-            display: inline-block;
-            background: #fab005 !important;
-            color: #000000 !important;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            text-decoration: none;
-            margin-top: 12px;
-            transition: all 0.2s ease;
-            border: 1px solid #fab005;
-            cursor: pointer;
-            text-align: center;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            box-shadow: 0 2px 8px rgba(250, 176, 5, 0.3);
-            line-height: 1.5;
-            width: fit-content;
-        }
-
-        /* Force black text on yellow background for ALL states */
+        /* ===== AGGRESSIVE AD BUTTON FIX ===== */
+        /* This will force black text on yellow background NO MATTER WHAT */
         .ad-button,
+        a.ad-button,
+        button.ad-button,
         .ad-button:link,
         .ad-button:visited,
         .ad-button:hover,
         .ad-button:active,
         .ad-button:focus,
-        a.ad-button,
-        button.ad-button,
-        .ad-button * {
-            color: #000000 !important;
+        .news-item .ad-button,
+        .news-item-content .ad-button,
+        div .ad-button,
+        span .ad-button,
+        p .ad-button {
+            display: inline-block !important;
+            background: #fab005 !important;
             background-color: #fab005 !important;
-            text-decoration: none;
-            text-shadow: none;
-        }
-
-        .ad-button i,
-        .ad-button i:before {
             color: #000000 !important;
+            color: #000000 !important;
+            text-decoration: none !important;
+            padding: 10px 24px !important;
+            border-radius: 40px !important;
+            font-size: 0.95rem !important;
+            font-weight: 800 !important;
+            margin-top: 12px !important;
+            border: 1px solid #fab005 !important;
+            cursor: pointer !important;
+            text-align: center !important;
+            letter-spacing: 0.5px !important;
+            text-transform: uppercase !important;
+            line-height: 1.5 !important;
+            width: fit-content !important;
+            text-shadow: none !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
-        .ad-button:hover {
+        /* Force all text inside to be black */
+        .ad-button *,
+        .ad-button span,
+        .ad-button i,
+        .ad-button strong,
+        .ad-button em,
+        .ad-button u,
+        .ad-button::before,
+        .ad-button::after {
+            color: #000000 !important;
+            background: transparent !important;
+            border-color: #000000 !important;
+            fill: #000000 !important;
+            stroke: #000000 !important;
+        }
+
+        /* Specifically target the icon */
+        .ad-button i,
+        .ad-button i:before,
+        .ad-button .ph,
+        .ad-button .ph-arrow-right {
+            color: #000000 !important;
+            background: transparent !important;
+        }
+
+        /* Hover state */
+        .ad-button:hover,
+        a.ad-button:hover {
             background: #e5a002 !important;
+            background-color: #e5a002 !important;
+            color: #000000 !important;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(250, 176, 5, 0.5);
+            box-shadow: 0 4px 15px rgba(250, 176, 5, 0.5) !important;
         }
 
-        .ad-button:active {
+        /* Active state */
+        .ad-button:active,
+        a.ad-button:active {
             background: #c88a00 !important;
-            transform: translateY(0);
+            background-color: #c88a00 !important;
+            color: #000000 !important;
+            transform: translateY(0) !important;
         }
-        
+
+        /* Focus state */
         .ad-button:focus-visible {
-            outline: 2px solid #000;
-            outline-offset: 2px;
+            outline: 2px solid #000 !important;
+            outline-offset: 2px !important;
+        }
+
+        /* Debug outline to see if button is being rendered */
+        .ad-button {
+            outline: none !important;
         }
         
         /* Ensure text in ad content is visible */
@@ -1859,6 +1895,7 @@
             return shuffled.slice(0, count);
         }
 
+        // ===== FIXED: renderNativeAd with EXTREME inline styles =====
         function renderNativeAd(ad) {
             return `
                 <div class="news-item ad-item" data-ad-id="${ad.id}" data-ad="true">
@@ -1874,8 +1911,33 @@
                         <div class="post-content-container">
                             <p>${ad.text}</p>
                         </div>
-                        <a href="${ad.buttonLink}" class="ad-button" target="_blank" onclick="trackAdClick('${ad.id}', event)">
-                            ${ad.buttonText} <i class="ph ph-arrow-right"></i>
+                        <!-- EXTREME INLINE STYLES TO FORCE BLACK TEXT ON YELLOW -->
+                        <a href="${ad.buttonLink}" 
+                           class="ad-button" 
+                           target="_blank" 
+                           onclick="trackAdClick('${ad.id}', event)"
+                           style="display: inline-block !important; 
+                                  background: #fab005 !important; 
+                                  background-color: #fab005 !important; 
+                                  color: #000000 !important; 
+                                  color: #000000 !important; 
+                                  padding: 10px 24px !important; 
+                                  border-radius: 40px !important; 
+                                  font-size: 0.95rem !important; 
+                                  font-weight: 800 !important; 
+                                  text-decoration: none !important; 
+                                  margin-top: 12px !important; 
+                                  border: 1px solid #fab005 !important; 
+                                  cursor: pointer !important; 
+                                  text-align: center !important; 
+                                  letter-spacing: 0.5px !important; 
+                                  text-transform: uppercase !important; 
+                                  line-height: 1.5 !important; 
+                                  width: fit-content !important; 
+                                  text-shadow: none !important; 
+                                  -webkit-text-fill-color: #000000 !important;
+                                  opacity: 1 !important;">
+                            ${ad.buttonText} <i class="ph ph-arrow-right" style="color: #000000 !important; background: transparent !important;"></i>
                         </a>
                         <div class="sponsored-tag">
                             <i class="ph ph-megaphone"></i> Sponsored Content
